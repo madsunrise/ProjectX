@@ -1,4 +1,4 @@
-package com.fleyta.projectx;
+package com.github.projectx;
 
 import org.junit.Test;
 

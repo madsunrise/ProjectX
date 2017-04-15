@@ -1,4 +1,4 @@
-package com.fleyta.projectx;
+package com.github.projectx;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.fleyta.projectx", appContext.getPackageName());
+        assertEquals("com.github.projectx", appContext.getPackageName());
     }
 }
