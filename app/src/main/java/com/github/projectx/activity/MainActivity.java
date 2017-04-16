@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(new ServiceListAdapter(this, new ArrayList<Service>()));
-
-        startActivity(new Intent(this, AuthActivity.class));
-        finish();
     }
 
     @Override
