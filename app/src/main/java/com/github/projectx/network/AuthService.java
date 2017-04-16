@@ -3,12 +3,10 @@ package com.github.projectx.network;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.github.projectx.R;
 import com.github.projectx.model.LoginRequest;
 import com.github.projectx.model.SignupRequest;
-import com.github.projectx.model.SignupResponce;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -111,9 +109,9 @@ public class AuthService {
     }
 
     public void signup(String name, String email, String phone, String password, final SignupResult callback) {
-        api.signup(new SignupRequest(name, email, phone, password)).enqueue(new Callback<SignupResponce>() {
+        api.signup(new SignupRequest(name, email, phone, password)).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<SignupResponce> call, Response<SignupResponce> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 switch (response.code()) {
                     case 200:
                         callback.onResult(true, R.string.success_signup);
@@ -131,7 +129,7 @@ public class AuthService {
             }
 
             @Override
-            public void onFailure(Call<SignupResponce> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 callback.onResult(false, R.string.network_error);
             }
         });

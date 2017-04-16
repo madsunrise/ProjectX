@@ -2,7 +2,6 @@ package com.github.projectx.network;
 
 import com.github.projectx.model.LoginRequest;
 import com.github.projectx.model.SignupRequest;
-import com.github.projectx.model.SignupResponce;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -18,5 +17,5 @@ public interface AuthAPI {
     Call<Void> login(@Body LoginRequest request);
 
     @POST("signup")
-    Call<SignupResponce> signup(@Body SignupRequest request);
+    Call<Void> signup(@Body SignupRequest request);
 }
