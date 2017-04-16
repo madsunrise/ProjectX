@@ -20,9 +20,9 @@ import retrofit2.Response;
  * Created by ivan on 15.04.17.
  */
 
-public class NetworkController extends BaseController {
+public class ServiceController extends BaseController {
 
-    private static NetworkController instance;
+    private static ServiceController instance;
     private final ServiceAPI api;
     private final ExecutorService serviceExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService serviceListExecutor = Executors.newSingleThreadExecutor();
@@ -30,14 +30,14 @@ public class NetworkController extends BaseController {
     private ServiceCallback serviceCallback;
 
 
-    private NetworkController(Context context) {
+    private ServiceController(Context context) {
         super(context);
         api = retrofit.create(ServiceAPI.class);
     }
 
-    public static NetworkController getInstance(Context context) {
+    public static ServiceController getInstance(Context context) {
         if (instance == null) {
-            instance = new NetworkController(context);
+            instance = new ServiceController(context);
         }
         return instance;
     }

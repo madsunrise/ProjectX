@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.model.Service;
-import com.github.projectx.network.NetworkController;
+import com.github.projectx.network.ServiceController;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -27,20 +27,21 @@ import static com.github.projectx.utils.Constants.NAV_DRAWER_ARTISTS_SEARCH;
 import static com.github.projectx.utils.Constants.NAV_DRAWER_MESSAGES;
 import static com.github.projectx.utils.Constants.NAV_DRAWER_SETTINGS;
 
-public class MainActivity extends AppCompatActivity implements NetworkController.ServiceListCallback {
+public class MainActivity extends AppCompatActivity implements ServiceController.ServiceListCallback {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private Drawer drawer;
     private FeedFragment feedFragment = new FeedFragment();
-    private NetworkController networkController;
+    private ServiceController serviceController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        networkController = NetworkController.getInstance(getApplicationContext());
-        networkController.setServiceListCallback(this);
+        serviceController = ServiceController.getInstance(getApplicationContext());
+        serviceController.setServiceListCallback(this);
         ButterKnife.bind(this);
 
         setUpNavDrawer();
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NetworkController
     @Override
     protected void onResume() {
         super.onResume();
-        networkController.queryForServiceList(null, null, 1, 15);
+        serviceController.queryForServiceList(null, null, 1, 15);
     }
 
     @Override
@@ -59,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements NetworkController
         Log.d(TAG, "Service list has been loaded");
         feedFragment.updateDataSet(services);
     }
-
-
 
     @Override
     public void dataLoadingFailed() {
@@ -71,9 +70,8 @@ public class MainActivity extends AppCompatActivity implements NetworkController
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        networkController.setServiceListCallback(null);
+        serviceController.setServiceListCallback(null);
     }
-
 
     private void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -81,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements NetworkController
         transaction.replace(R.id.container, fragment);
         transaction.commitAllowingStateLoss();
     }
-
-
 
     private void setUpNavDrawer() {
         PrimaryDrawerItem artists = new PrimaryDrawerItem()
@@ -105,6 +101,4 @@ public class MainActivity extends AppCompatActivity implements NetworkController
                         settings
                 ).build();
     }
-
-    private static final String TAG = MainActivity.class.getSimpleName();
 }
