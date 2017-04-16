@@ -1,4 +1,4 @@
-package com.github.projectx.Utils;
+package com.github.projectx.utils;
 
 import android.os.Handler;
 import android.os.Looper;

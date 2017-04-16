@@ -1,9 +1,7 @@
 package com.github.projectx.network;
 
 
-import android.util.Log;
-
-import com.github.projectx.Utils.UiThread;
+import com.github.projectx.utils.UiThread;
 import com.github.projectx.model.Service;
 
 import java.io.IOException;
