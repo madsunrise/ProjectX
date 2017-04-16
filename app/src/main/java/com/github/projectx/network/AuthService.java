@@ -64,7 +64,7 @@ public class AuthService {
                     cookies.add(CookieHelper.get(KEY1, sp));
                 }
                 if (sp.contains(KEY2)) {
-                    cookies.add(CookieHelper.get(KEY1, sp));
+                    cookies.add(CookieHelper.get(KEY2, sp));
                 }
                 return cookies;
             }
