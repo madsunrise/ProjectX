@@ -53,7 +53,9 @@ public class AuthActivity extends AppCompatActivity implements AuthService.Login
     public void onResult(boolean success, int message) {
         btnLogin.setEnabled(true);
         if (success) {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

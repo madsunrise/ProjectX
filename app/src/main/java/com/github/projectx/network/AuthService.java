@@ -136,8 +136,8 @@ public class AuthService {
     }
 
     static class CookieHelper {
-        static final String KEY1 = "";
-        static final String KEY2 = "";
+        static final String KEY1 = "token";
+        static final String KEY2 = "session_id";
 
         static void store(Cookie cookie, SharedPreferences.Editor e) {
             e.putString(cookie.name(), cookie.value());

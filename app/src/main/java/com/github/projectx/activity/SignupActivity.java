@@ -54,7 +54,9 @@ public class SignupActivity extends AppCompatActivity implements AuthService.Sig
     public void onResult(boolean success, int message) {
         btnSignup.setEnabled(true);
         if (success) {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
