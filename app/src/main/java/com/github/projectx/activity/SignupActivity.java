@@ -18,39 +18,41 @@ import butterknife.OnClick;
  * Created by igor on 16.04.17.
  */
 
-public class AuthActivity extends AppCompatActivity implements AuthService.LoginResult {
+public class SignupActivity extends AppCompatActivity implements AuthService.SignupResult {
 
-    @BindView(R.id.login)
-    TextInputEditText login;
+    @BindView(R.id.name)
+    TextInputEditText name;
+    @BindView(R.id.email)
+    TextInputEditText email;
+    @BindView(R.id.phone)
+    TextInputEditText phone;
     @BindView(R.id.password)
     TextInputEditText password;
-    @BindView(R.id.btn_login)
-    Button btnLogin;
+    @BindView(R.id.btn_signup)
+    Button btnSignup;
 
     private AuthService service;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
+        setContentView(R.layout.activity_signup);
         service = AuthService.instance(getApplicationContext());
         ButterKnife.bind(this);
     }
 
-    @OnClick(R.id.btn_login)
-    public void login() {
-        btnLogin.setEnabled(false);
-        service.login(login.getText().toString(), password.getText().toString(), this);
-    }
-
-    @OnClick(R.id.btn_register)
+    @OnClick(R.id.btn_signup)
     public void signup() {
-        startActivity(new Intent(this, SignupActivity.class));
+        btnSignup.setEnabled(false);
+        service.signup(name.getText().toString(),
+                email.getText().toString(),
+                phone.getText().toString(),
+                password.getText().toString(), this);
     }
 
     @Override
     public void onResult(boolean success, int message) {
-        btnLogin.setEnabled(true);
+        btnSignup.setEnabled(true);
         if (success) {
             startActivity(new Intent(this, MainActivity.class));
             finish();

@@ -3,8 +3,12 @@ package com.github.projectx.network;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
-import com.github.projectx.model.Login;
+import com.github.projectx.R;
+import com.github.projectx.model.LoginRequest;
+import com.github.projectx.model.SignupRequest;
+import com.github.projectx.model.SignupResponce;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -80,37 +84,55 @@ public class AuthService {
     }
 
     public void login(String login, String password, final LoginResult callback) {
-        api.login(new Login(login, password)).enqueue(new Callback<Void>() {
+        api.login(new LoginRequest(login, password)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() != 200) {
-                    callback.onResult(true, false);
-                } else {
-                    callback.onResult(true, true);
+                switch (response.code()) {
+                    case 200:
+                        callback.onResult(true, R.string.success_login);
+                        break;
+                    case 403:
+                        callback.onResult(false, R.string.invalid_login);
+                        break;
+                    case 404:
+                        callback.onResult(false, R.string.user_not_found);
+                        break;
+                    default:
+                        callback.onResult(false, R.string.unknown_error);
+                        break;
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                callback.onResult(true, false);
+                callback.onResult(false, R.string.network_error);
             }
         });
     }
 
-    public void signup(String name, String email, String phone, String password, final LoginResult callback) {
-        api.signup(name, email, phone, password).enqueue(new Callback<Void>() {
+    public void signup(String name, String email, String phone, String password, final SignupResult callback) {
+        api.signup(new SignupRequest(name, email, phone, password)).enqueue(new Callback<SignupResponce>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() != 200) {
-                    callback.onResult(false, false);
-                } else {
-                    callback.onResult(false, true);
+            public void onResponse(Call<SignupResponce> call, Response<SignupResponce> response) {
+                switch (response.code()) {
+                    case 200:
+                        callback.onResult(true, R.string.success_signup);
+                        break;
+                    case 400:
+                        callback.onResult(false, R.string.bad_parameters);
+                        break;
+                    case 409:
+                        callback.onResult(false, R.string.email_taken);
+                        break;
+                    default:
+                        callback.onResult(false, R.string.unknown_error);
+                        break;
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                callback.onResult(false, false);
+            public void onFailure(Call<SignupResponce> call, Throwable t) {
+                callback.onResult(false, R.string.network_error);
             }
         });
     }
@@ -150,6 +172,10 @@ public class AuthService {
     }
 
     public interface LoginResult {
-        void onResult(boolean type, boolean success);
+        void onResult(boolean success, int message);
+    }
+
+    public interface SignupResult {
+        void onResult(boolean success, int message);
     }
 }
