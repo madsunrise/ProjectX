@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ProjectX</string>
     <string name="error_occured">Произошла ошибка!</string>
+    <string name="artists_search">Поиск артистов</string>
+    <string name="my_messages">Мои сообщения</string>
+    <string name="settings">Настройки</string>
 </resources>

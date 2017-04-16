@@ -29,19 +29,13 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-
         TextView name;
-
-        TextView description;
-
         TextView price;
-
         TextView rating;
 
         MyViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.service_name);
-            description = (TextView) view.findViewById(R.id.service_description);
             price = (TextView) view.findViewById(R.id.service_price);
             rating = (TextView) view.findViewById(R.id.service_rating);
         }
@@ -59,7 +53,6 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Service service = serviceList.get(position);
         holder.name.setText(service.getName());
-        holder.description.setText(service.getDescription());
         holder.price.setText(String.valueOf(service.getPrice()));
         holder.rating.setText(String.valueOf(service.getRating()));
     }
