@@ -4,4 +4,20 @@
     <string name="artists_search">Поиск артистов</string>
     <string name="my_messages">Мои сообщения</string>
     <string name="settings">Настройки</string>
+    <string name="login_text">Login</string>
+    <string name="password_text">Password</string>
+    <string name="registration_text">Registration</string>
+    <string name="remind_password">Remind password</string>
+    <string name="success_login">Login success</string>
+    <string name="invalid_login">Invalid login or password</string>
+    <string name="user_not_found">User not found</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="network_error">Network error</string>
+    <string name="success_signup">Signup success</string>
+    <string name="bad_parameters">Bad parameters</string>
+    <string name="email_taken">Email has already been taken</string>
+    <string name="signup_text">Signup</string>
+    <string name="phone_text">Phone</string>
+    <string name="email_text">Email</string>
+    <string name="name_text">Name</string>
 </resources>

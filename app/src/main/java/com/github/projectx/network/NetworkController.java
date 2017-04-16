@@ -1,8 +1,11 @@
 package com.github.projectx.network;
 
 
-import com.github.projectx.utils.UiThread;
+import android.content.Context;
+
 import com.github.projectx.model.Service;
+import com.github.projectx.network.api.ServiceAPI;
+import com.github.projectx.utils.UiThread;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,31 +20,26 @@ import retrofit2.Response;
  * Created by ivan on 15.04.17.
  */
 
-public class NetworkService {
+public class NetworkController extends BaseController {
 
-    private static NetworkService instance = new NetworkService();
-    private final ApiService apiService = ApiService.retrofit.create(ApiService.class);
+    private static NetworkController instance;
+    private final ServiceAPI api;
+    private final ExecutorService serviceExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService serviceListExecutor = Executors.newSingleThreadExecutor();
     private ServiceListCallback serviceListCallback;
     private ServiceCallback serviceCallback;
 
-    private final ExecutorService serviceExecutor = Executors.newSingleThreadExecutor();
-    private final ExecutorService serviceListExecutor = Executors.newSingleThreadExecutor();
 
+    private NetworkController(Context context) {
+        super(context);
+        api = retrofit.create(ServiceAPI.class);
+    }
 
-    private NetworkService() {}
-
-    public static NetworkService getInstance() {
+    public static NetworkController getInstance(Context context) {
+        if (instance == null) {
+            instance = new NetworkController(context);
+        }
         return instance;
-    }
-
-    public interface ServiceListCallback {
-        void onDataLoaded(List<Service> services);
-        void dataLoadingFailed();
-    }
-
-    public interface ServiceCallback {
-        void onDataLoaded(Service service);
-        void dataLoadingFailed();
     }
 
     public void setServiceListCallback(ServiceListCallback serviceListCallback) {
@@ -51,8 +49,6 @@ public class NetworkService {
     public void setServiceCallback(ServiceCallback serviceCallback) {
         this.serviceCallback = serviceCallback;
     }
-
-
 
     public void queryForService(final long id) {
         serviceExecutor.execute(new Runnable() {
@@ -83,14 +79,13 @@ public class NetworkService {
     }
 
    private Service requestServiceInfo(long id) throws IOException {
-       Call<Service> call = apiService.getService(id);
+       Call<Service> call = api.getService(id);
        Response<Service> response = call.execute();
        if (!response.isSuccessful()) {
            throw new IOException("Response is not successful");
        }
        return response.body();
    }
-
 
     public void queryForServiceList(final String category,
                                     final String sort,
@@ -125,11 +120,24 @@ public class NetworkService {
     }
 
     private List<Service> requestListService(String category, String sort, Integer page, int limit) throws IOException {
-        Call<List<Service>> call = apiService.getListServices(category, sort, page, limit);
+        Call<List<Service>> call = api.getListServices(category, sort, page, limit);
         Response<List<Service>> response = call.execute();
         if (!response.isSuccessful()) {
             throw new IOException("Response is not successful");
         }
         return response.body();
+    }
+
+
+    public interface ServiceListCallback {
+        void onDataLoaded(List<Service> services);
+
+        void dataLoadingFailed();
+    }
+
+    public interface ServiceCallback {
+        void onDataLoaded(Service service);
+
+        void dataLoadingFailed();
     }
 }

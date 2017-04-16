@@ -1,28 +1,23 @@
 package com.github.projectx.activity;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.github.projectx.R;
-import com.github.projectx.ServiceListAdapter;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.model.Service;
-import com.github.projectx.network.NetworkService;
+import com.github.projectx.network.NetworkController;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,22 +27,20 @@ import static com.github.projectx.utils.Constants.NAV_DRAWER_ARTISTS_SEARCH;
 import static com.github.projectx.utils.Constants.NAV_DRAWER_MESSAGES;
 import static com.github.projectx.utils.Constants.NAV_DRAWER_SETTINGS;
 
-public class MainActivity extends AppCompatActivity implements NetworkService.ServiceListCallback {
-
-    private final NetworkService networkService = NetworkService.getInstance();
+public class MainActivity extends AppCompatActivity implements NetworkController.ServiceListCallback {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
     private Drawer drawer;
-
     private FeedFragment feedFragment = new FeedFragment();
+    private NetworkController networkController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        networkService.setServiceListCallback(this);
+        networkController = NetworkController.getInstance(getApplicationContext());
+        networkController.setServiceListCallback(this);
         ButterKnife.bind(this);
 
         setUpNavDrawer();
@@ -58,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
     @Override
     protected void onResume() {
         super.onResume();
-        networkService.queryForServiceList(null, null, 1, 15);
+        networkController.queryForServiceList(null, null, 1, 15);
     }
 
     @Override
@@ -75,13 +68,11 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
         Toast.makeText(this, R.string.error_occured, Toast.LENGTH_SHORT).show();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        networkService.setServiceListCallback(null);
+        networkController.setServiceListCallback(null);
     }
-
 
 
     private void changeFragment(Fragment fragment) {
