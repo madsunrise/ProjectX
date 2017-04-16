@@ -1,5 +1,6 @@
 package com.github.projectx.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(new ServiceListAdapter(this, new ArrayList<Service>()));
+
+        startActivity(new Intent(this, AuthActivity.class));
+        finish();
     }
 
     @Override

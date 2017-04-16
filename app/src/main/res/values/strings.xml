@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ProjectX</string>
     <string name="error_occured">Произошла ошибка!</string>
+    <string name="login_text">Login</string>
+    <string name="password_text">Password</string>
+    <string name="registration_text">Registration</string>
+    <string name="remind_password">Remind password</string>
 </resources>
