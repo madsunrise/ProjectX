@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.projectx.R;
-import com.github.projectx.network.AuthService;
+import com.github.projectx.network.AuthController;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,7 +18,7 @@ import butterknife.OnClick;
  * Created by igor on 16.04.17.
  */
 
-public class SignupActivity extends AppCompatActivity implements AuthService.SignupResult {
+public class SignupActivity extends AppCompatActivity implements AuthController.SignupResult {
 
     @BindView(R.id.name)
     TextInputEditText name;
@@ -31,20 +31,20 @@ public class SignupActivity extends AppCompatActivity implements AuthService.Sig
     @BindView(R.id.btn_signup)
     Button btnSignup;
 
-    private AuthService service;
+    private AuthController controller;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        service = AuthService.instance(getApplicationContext());
+        controller = AuthController.getInstance(getApplicationContext());
         ButterKnife.bind(this);
     }
 
     @OnClick(R.id.btn_signup)
     public void signup() {
         btnSignup.setEnabled(false);
-        service.signup(name.getText().toString(),
+        controller.signup(name.getText().toString(),
                 email.getText().toString(),
                 phone.getText().toString(),
                 password.getText().toString(), this);

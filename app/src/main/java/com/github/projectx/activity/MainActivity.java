@@ -1,18 +1,16 @@
 package com.github.projectx.activity;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.github.projectx.R;
 import com.github.projectx.ServiceListAdapter;
 import com.github.projectx.model.Service;
-import com.github.projectx.network.NetworkService;
+import com.github.projectx.network.NetworkController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +18,20 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements NetworkService.ServiceListCallback {
+public class MainActivity extends AppCompatActivity implements NetworkController.ServiceListCallback {
 
-    private final NetworkService networkService = NetworkService.getInstance();
-    private ServiceListAdapter adapter;
+    private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.service_list_recycler)
     RecyclerView recyclerView;
+    private NetworkController networkController;
+    private ServiceListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        networkService.setServiceListCallback(this);
+        networkController = NetworkController.getInstance(getApplicationContext());
+        networkController.setServiceListCallback(this);
         ButterKnife.bind(this);
 
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
     @Override
     protected void onResume() {
         super.onResume();
-        networkService.queryForServiceList(null, null, 1, 15);
+        networkController.queryForServiceList(null, null, 1, 15);
     }
 
     @Override
@@ -61,12 +61,9 @@ public class MainActivity extends AppCompatActivity implements NetworkService.Se
         Toast.makeText(this, R.string.error_occured, Toast.LENGTH_SHORT).show();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        networkService.setServiceListCallback(null);
+        networkController.setServiceListCallback(null);
     }
-
-    private static final String TAG = MainActivity.class.getSimpleName();
 }

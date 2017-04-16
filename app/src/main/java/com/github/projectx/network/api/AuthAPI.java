@@ -1,4 +1,4 @@
-package com.github.projectx.network;
+package com.github.projectx.network.api;
 
 import com.github.projectx.model.LoginRequest;
 import com.github.projectx.model.SignupRequest;
