@@ -20,4 +20,11 @@
     <string name="phone_text">Phone</string>
     <string name="email_text">Email</string>
     <string name="name_text">Name</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="price_in_rub">Цена (руб)</string>
+    <string name="rating">Рейтинг</string>
+    <string name="save">Сохранить</string>
+    <string name="fill_all_fields">Заполните все поля!</string>
+    <string name="add_service">Добавить услугу</string>
 </resources>
