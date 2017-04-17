@@ -38,6 +38,11 @@ public abstract class BaseController {
         }
     }
 
+    public static boolean authorized(Context context) {
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.contains(KEY1) && sp.contains(KEY2);
+    }
+
     private void init(Context context) {
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         OkHttpClient okHttpClient = new OkHttpClient.Builder().cookieJar(new CookieJar() {
