@@ -2,6 +2,7 @@ package com.github.projectx.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -20,6 +21,15 @@ import butterknife.OnClick;
 
 public class AuthActivity extends AppCompatActivity implements AuthController.LoginResult {
 
+    static {
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        );
+    }
+
     @BindView(R.id.login)
     TextInputEditText login;
     @BindView(R.id.password)
@@ -33,20 +43,31 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        controller = AuthController.getInstance(getApplicationContext());
         ButterKnife.bind(this);
+
+        controller = AuthController.getInstance(getApplicationContext());
+        controller.setLoginResultListener(this);
+
+        btnLogin.setEnabled(!controller.isLoginPerforming());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        controller.setLoginResultListener(null);
     }
 
     @OnClick(R.id.btn_login)
     public void login() {
         btnLogin.setEnabled(false);
-        controller.login(login.getText().toString(), password.getText().toString(), this);
+        controller.login(login.getText().toString(), password.getText().toString());
     }
 
     @OnClick(R.id.btn_register)
     public void signup() {
         startActivity(new Intent(this, SignupActivity.class));
     }
+
 
     @Override
     public void onResult(boolean success, int message) {

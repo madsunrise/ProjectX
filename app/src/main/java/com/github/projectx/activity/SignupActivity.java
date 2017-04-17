@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -37,8 +38,19 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        controller = AuthController.getInstance(getApplicationContext());
         ButterKnife.bind(this);
+
+        controller = AuthController.getInstance(getApplicationContext());
+        controller.setSignupResultListener(this);
+
+        btnSignup.setEnabled(!controller.isSignupPerforming());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        controller.setSignupResultListener(null);
+        Log.d("3423", "onDestroy");
     }
 
     @OnClick(R.id.btn_signup)
@@ -47,7 +59,7 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
         controller.signup(name.getText().toString(),
                 email.getText().toString(),
                 phone.getText().toString(),
-                password.getText().toString(), this);
+                password.getText().toString());
     }
 
     @Override

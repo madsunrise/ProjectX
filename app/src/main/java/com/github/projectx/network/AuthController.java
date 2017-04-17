@@ -19,6 +19,11 @@ public class AuthController extends BaseController {
 
     private static AuthController instance = null;
     private final AuthAPI api;
+    private LoginResult loginResult;
+    private SignupResult signupResult;
+
+    private boolean loginPerforming = false;
+    private boolean signupPerforming = false;
 
     private AuthController(Context context) {
         super(context);
@@ -32,58 +37,94 @@ public class AuthController extends BaseController {
         return instance;
     }
 
-    public void login(String login, String password, final AuthController.LoginResult callback) {
+    public void setLoginResultListener(LoginResult listener) {
+        loginResult = listener;
+    }
+
+    public void setSignupResultListener(SignupResult listener) {
+        signupResult = listener;
+    }
+
+    public void login(final String login, String password) {
+        loginPerforming = true;
         api.login(new LoginRequest(login, password)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
+                boolean result = response.code() == 200;
+                int message;
                 switch (response.code()) {
                     case 200:
-                        callback.onResult(true, R.string.success_login);
+                        message = R.string.success_login;
                         break;
                     case 403:
-                        callback.onResult(false, R.string.invalid_login);
+                        message = R.string.invalid_login;
                         break;
                     case 404:
-                        callback.onResult(false, R.string.user_not_found);
+                        message = R.string.user_not_found;
                         break;
                     default:
-                        callback.onResult(false, R.string.unknown_error);
+                        message = R.string.unknown_error;
                         break;
                 }
+                if (loginResult != null) {
+                    loginResult.onResult(result, message);
+                }
+                loginPerforming = false;
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                callback.onResult(false, R.string.network_error);
+                if (loginResult != null) {
+                    loginResult.onResult(false, R.string.network_error);
+                }
+                loginPerforming = false;
             }
         });
     }
 
-    public void signup(String name, String email, String phone, String password, final AuthController.SignupResult callback) {
+    public void signup(String name, String email, String phone, String password) {
+        signupPerforming = true;
         api.signup(new SignupRequest(name, email, phone, password)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
+                boolean result = response.code() == 200;
+                int message;
                 switch (response.code()) {
                     case 200:
-                        callback.onResult(true, R.string.success_signup);
+                        message = R.string.success_signup;
                         break;
                     case 400:
-                        callback.onResult(false, R.string.bad_parameters);
+                        message = R.string.bad_parameters;
                         break;
                     case 409:
-                        callback.onResult(false, R.string.email_taken);
+                        message = R.string.email_taken;
                         break;
                     default:
-                        callback.onResult(false, R.string.unknown_error);
+                        message = R.string.unknown_error;
                         break;
                 }
+                if (signupResult != null) {
+                    signupResult.onResult(result, message);
+                }
+                signupPerforming = false;
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                callback.onResult(false, R.string.network_error);
+                if (signupResult != null) {
+                    signupResult.onResult(false, R.string.network_error);
+                }
+                signupPerforming = false;
             }
         });
+    }
+
+    public boolean isLoginPerforming() {
+        return loginPerforming;
+    }
+
+    public boolean isSignupPerforming() {
+        return signupPerforming;
     }
 
     public interface LoginResult {
