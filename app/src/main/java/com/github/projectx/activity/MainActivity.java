@@ -1,5 +1,6 @@
 package com.github.projectx.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.view.View;
 import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.fragment.ServiceEditorFragment;
+import com.github.projectx.network.BaseController;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -55,16 +57,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    private void onDrawerPushed (int itemId) {
+    private void onDrawerPushed(int itemId) {
         switch (itemId) {
             case NAV_DRAWER_ARTISTS_SEARCH: {
                 changeFragment(feedFragment, false);
                 break;
             }
             case NAV_DRAWER_ADD_SERVICE: {
-                changeFragment(new ServiceEditorFragment(), true);
+                if (BaseController.authorized(getApplicationContext())) {
+                    changeFragment(new ServiceEditorFragment(), true);
+                } else {
+                    Intent intent = new Intent(this, AuthActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                }
                 break;
             }
             default:
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        onDrawerPushed((int)drawerItem.getIdentifier());
+                        onDrawerPushed((int) drawerItem.getIdentifier());
                         return false;
                     }
                 })
