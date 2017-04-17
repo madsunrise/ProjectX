@@ -1,8 +1,8 @@
 package com.github.projectx.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.projectx.R;
@@ -19,11 +19,11 @@ import butterknife.OnClick;
 
 public class NewServiceActivity extends AppCompatActivity implements ServiceController.ServiceEditCallback {
     @BindView(R.id.name)
-    public EditText name;
+    public TextInputEditText name;
     @BindView(R.id.description)
-    public EditText description;
+    public TextInputEditText description;
     @BindView(R.id.price)
-    public EditText price;
+    public TextInputEditText price;
     private ServiceController serviceController;
 
     @Override

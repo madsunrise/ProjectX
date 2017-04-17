@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     private Drawer drawer;
     private FeedFragment feedFragment = new FeedFragment();
 
@@ -60,6 +61,14 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         transaction.commitAllowingStateLoss();
     }
 
+    @Override
+    public void addService() {
+        if (!BaseController.isAuthorized(getApplicationContext())) {
+            startActivityForResult(new Intent(this, AuthActivity.class), 0);
+        } else {
+            startActivity(new Intent(this, NewServiceActivity.class));
+        }
+    }
 
     private void onMenuItemClick(int itemId) {
         Constants.Menu item = Constants.Menu.values()[itemId];
@@ -68,11 +77,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 changeFragment(feedFragment, false);
                 break;
             case ADD_SERVICE:
-                if (!BaseController.isAuthorized(getApplicationContext())) {
-                    startActivityForResult(new Intent(this, AuthActivity.class), 0);
-                } else {
-                    startActivity(new Intent(this, NewServiceActivity.class));
-                }
+                addService();
                 break;
             case MESSAGES:
                 break;
@@ -88,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         if (drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         }
-
     }
 
     @Override

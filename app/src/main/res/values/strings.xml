@@ -28,4 +28,7 @@
     <string name="fill_all_fields">Заполните все поля!</string>
     <string name="add_service">Добавить услугу</string>
     <string name="logout">Logout</string>
+    <string name="authorization">Authorization</string>
+    <string name="new_service">New service</string>
+    <string name="registration">Registration</string>
 </resources>

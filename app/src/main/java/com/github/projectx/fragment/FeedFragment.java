@@ -18,6 +18,10 @@ import com.github.projectx.network.ServiceController;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by ivan on 16.04.17.
  */
@@ -25,8 +29,9 @@ import java.util.List;
 public class FeedFragment extends Fragment implements ServiceController.ServiceListCallback, View.OnClickListener {
 
     private static final String TAG = FeedFragment.class.getSimpleName();
+    @BindView(R.id.service_list_recycler)
+    RecyclerView recyclerView;
     private ServiceController serviceController;
-    private RecyclerView recyclerView;
     private ServiceListAdapter adapter;
 
     @Override
@@ -39,7 +44,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.feed_fragment, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.service_list_recycler);
+        ButterKnife.bind(this, view);
         setUpRecyclerView();
         serviceController.setServiceListCallback(this);
         update();
@@ -85,8 +90,14 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         chf.openService(item);
     }
 
+    @OnClick(R.id.floating_btn)
+    public void onFabClick() {
+        ((CHF) getActivity()).addService();
+    }
 
     public interface CHF {
         void openService(Service service);
+
+        void addService();
     }
 }

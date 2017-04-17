@@ -10,32 +10,47 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        app:title="New service"
+        app:title="@string/new_service"
         app:titleTextColor="@android:color/white" />
 
-    <EditText
-        android:id="@+id/name"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:hint="@string/title"
-        android:maxLength="100" />
+        android:layout_marginTop="15dp">
 
-    <EditText
-        android:id="@+id/description"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/title"
+            android:maxLength="100" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:hint="@string/description" />
+        android:layout_marginTop="15dp">
 
-    <EditText
-        android:id="@+id/price"
-        android:layout_width="100dp"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/description" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:hint="@string/price_in_rub"
-        android:inputType="number"
-        android:maxLength="7" />
+        android:layout_marginTop="15dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/price_in_rub"
+            android:inputType="number"
+            android:maxLength="7" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/save"
