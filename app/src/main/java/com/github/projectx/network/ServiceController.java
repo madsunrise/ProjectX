@@ -2,7 +2,9 @@ package com.github.projectx.network;
 
 
 import android.content.Context;
+import android.util.Log;
 
+import com.github.projectx.model.NewServiceRequest;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.api.ServiceAPI;
 import com.github.projectx.utils.UiThread;
@@ -24,10 +26,14 @@ public class ServiceController extends BaseController {
 
     private static ServiceController instance;
     private final ServiceAPI api;
-    private final ExecutorService serviceExecutor = Executors.newSingleThreadExecutor();
+
+    private final ExecutorService serviceInfoExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService serviceListExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService serviceEditExecutor = Executors.newSingleThreadExecutor();
+
     private ServiceListCallback serviceListCallback;
-    private ServiceCallback serviceCallback;
+    private ServiceInfoCallback serviceInfoCallback;
+    private ServiceEditCallback serviceEditCallback;
 
 
     private ServiceController(Context context) {
@@ -35,57 +41,54 @@ public class ServiceController extends BaseController {
         api = retrofit.create(ServiceAPI.class);
     }
 
-    public static ServiceController getInstance(Context context) {
+    public static synchronized ServiceController getInstance(Context context) {
         if (instance == null) {
             instance = new ServiceController(context);
         }
         return instance;
     }
 
-    public void setServiceListCallback(ServiceListCallback serviceListCallback) {
-        this.serviceListCallback = serviceListCallback;
-    }
 
-    public void setServiceCallback(ServiceCallback serviceCallback) {
-        this.serviceCallback = serviceCallback;
+    public void sendNewService(final NewServiceRequest request) {
+        serviceEditExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final boolean success = createService(request);
+                UiThread.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (serviceEditCallback != null) {
+                            serviceEditCallback.onRequestComplete(success);
+                        }
+                    }
+                });
+            }
+        });
+
     }
 
     public void queryForService(final long id) {
-        serviceExecutor.execute(new Runnable() {
+        serviceInfoExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Service service = requestServiceInfo(id);
-                    UiThread.run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (serviceCallback != null) {
-                                serviceCallback.onDataLoaded(service);
+                final Service service = requestServiceInfo(id);
+                UiThread.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (serviceInfoCallback != null) {
+                            if (service != null) {
+                                serviceInfoCallback.onDataLoaded(service);
+                            }
+                            else {
+                                serviceInfoCallback.dataLoadingFailed();
                             }
                         }
-                    });
-                } catch (IOException ex) {
-                    UiThread.run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (serviceCallback != null) {
-                                serviceCallback.dataLoadingFailed();
-                            }
-                        }
-                    });
-                }
+                    }
+                });
             }
         });
     }
 
-   private Service requestServiceInfo(long id) throws IOException {
-       Call<Service> call = api.getService(id);
-       Response<Service> response = call.execute();
-       if (!response.isSuccessful()) {
-           throw new IOException("Response is not successful");
-       }
-       return response.body();
-   }
 
     public void queryForServiceList(final String category,
                                     final String sort,
@@ -95,49 +98,94 @@ public class ServiceController extends BaseController {
         serviceListExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final List<Service> services = requestListService(category, sort, page, limit);
-                    UiThread.run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (serviceListCallback != null) {
+                final List<Service> services = requestListService(category, sort, page, limit);
+                UiThread.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (serviceListCallback != null) {
+                            if (services != null) {
                                 serviceListCallback.onDataLoaded(services);
                             }
-                        }
-                    });
-                }
-                catch (IOException ex) {
-                    UiThread.run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (serviceListCallback != null) {
+                            else {
                                 serviceListCallback.dataLoadingFailed();
                             }
                         }
-                    });
-                }
+                    }
+                });
         }});
     }
 
-    private List<Service> requestListService(String category, String sort, Integer page, int limit) throws IOException {
-        Call<List<Service>> call = api.getListServices(category, sort, page, limit);
-        Response<List<Service>> response = call.execute();
-        if (!response.isSuccessful()) {
-            throw new IOException("Response is not successful");
+
+
+
+    private boolean createService(NewServiceRequest request) {
+        Call<Void> call = api.createService(request);
+        try {
+            Response<Void> response = call.execute();
+            return response.isSuccessful() && response.code() == 200;
         }
-        return response.body();
+        catch (IOException ex) {
+            Log.d(TAG, "Failed creating service! " + ex.getMessage());
+            return false;
+        }
+    }
+
+    private Service requestServiceInfo(long id) {
+        Call<Service> call = api.getService(id);
+        try {
+            Response<Service> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        }
+        catch (IOException ex) {
+            Log.d(TAG, "Failed querying service info! " + ex.getMessage());
+            return null;
+        }
+    }
+
+
+    private List<Service> requestListService(String category, String sort, Integer page, int limit) {
+        Call<List<Service>> call = api.getListServices(category, sort, page, limit);
+        try {
+            Response<List<Service>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        }
+        catch (IOException ex) {
+            Log.d(TAG, "Failed querying service list! " + ex.getMessage());
+            return null;
+        }
     }
 
 
     public interface ServiceListCallback {
         void onDataLoaded(List<Service> services);
-
         void dataLoadingFailed();
     }
 
-    public interface ServiceCallback {
+    public interface ServiceInfoCallback {
         void onDataLoaded(Service service);
-
         void dataLoadingFailed();
     }
+
+    public interface ServiceEditCallback {
+        void onRequestComplete(boolean success);
+    }
+
+    public void setServiceListCallback(ServiceListCallback serviceListCallback) {
+        this.serviceListCallback = serviceListCallback;
+    }
+
+    public void setServiceInfoCallback(ServiceInfoCallback serviceInfoCallback) {
+        this.serviceInfoCallback = serviceInfoCallback;
+    }
+
+    public void setServiceEditCallback(ServiceEditCallback serviceEditCallback) {
+        this.serviceEditCallback = serviceEditCallback;
+    }
+    private static final String TAG = ServiceController.class.getSimpleName();
 }
