@@ -2,7 +2,6 @@ package com.github.projectx.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,25 +10,28 @@ import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.github.projectx.R;
 import com.github.projectx.model.NewServiceRequest;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.ServiceController;
+import com.github.projectx.utils.UiThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,26 +44,29 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class ServiceEditorFragment extends Fragment implements ServiceController.ServiceEditCallback {
-
-    private ServiceController serviceController;
-
-    public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
-
     @BindView(R.id.service_name_ET)
     public EditText nameET;
     @BindView(R.id.service_description_ET)
     public EditText descriptionET;
     @BindView(R.id.service_price_ET)
     public EditText priceET;
+    @BindView(R.id.save)
+    public Button saveButton;
 
     @BindView(R.id.default_photo)
     public ImageView addPhotoIV;
     @BindView(R.id.photo_container)
     LinearLayout photoContainer;
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
+
+    private ServiceController serviceController;
+    public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
 
     private final Service service = new Service();
-    private final List<ImageView> imageViews = new ArrayList<>();
     private final List<String> photos = new ArrayList<>();
+
+    private final ExecutorService photoProcessor = Executors.newSingleThreadExecutor();
 
 
     @Override
@@ -69,6 +74,7 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
         super.onCreate(savedInstanceState);
         serviceController = ServiceController.getInstance(getContext());
     }
+
 
     @Nullable
     @Override
@@ -89,14 +95,6 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
     }
 
 
-    @Override
-    public void onRequestComplete(boolean success) {
-        if (!success) {
-            Toast.makeText(getContext(), R.string.error_occured, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        getActivity().getSupportFragmentManager().popBackStack();
-    }
 
     @OnClick(R.id.save)
     public void sendService() {
@@ -107,6 +105,9 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
             Toast.makeText(getContext(), R.string.fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        progressBar.setVisibility(View.VISIBLE);
+        saveButton.setEnabled(false);
 
         service.setName(name);
         service.setDescription(description);
@@ -119,6 +120,16 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
 
 
 
+    @Override
+    public void onRequestComplete(boolean success) {
+        progressBar.setVisibility(View.GONE);
+        saveButton.setEnabled(true);
+        if (!success) {
+            Toast.makeText(getContext(), R.string.error_occured, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        getActivity().getSupportFragmentManager().popBackStack();
+    }
 
 
 
@@ -129,18 +140,14 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
             if (data == null || data.getData() == null) {
                 return;
             }
-
             Uri uri = data.getData();
             try {
                 final Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
                 addPhotoToScreen(bitmap);
 
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                String encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
-                stream.close();
-                photos.add(encoded);
-
+                saveButton.setEnabled(false);
+                progressBar.setVisibility(View.VISIBLE);
+                photoProcessor.execute(new PhotoEncoder(bitmap));
             } catch (IOException e) {
                 Log.e(TAG, "Failed to pick image: " + e.getMessage());
             }
@@ -148,13 +155,19 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
     }
 
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        serviceController.setServiceEditCallback(null);
+    }
+
+
+
     private void addPhotoToScreen(Bitmap bitmap) {
         ImageView image = new ImageView(getContext());
         image.setMaxHeight(convertToPx(75));
         image.setAdjustViewBounds(true);
         image.setImageBitmap(bitmap);
-
-        imageViews.add(image);
         photoContainer.addView(image, 0);
     }
 
@@ -163,10 +176,34 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        serviceController.setServiceEditCallback(null);
+    private class PhotoEncoder implements Runnable {
+        private Bitmap bitmap;
+        private PhotoEncoder(Bitmap bitmap) {
+            this.bitmap = bitmap;
+        }
+        @Override
+        public void run() {
+            try {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                String encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
+                stream.close();
+                photos.add(encoded);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to compress image: " + e.getMessage());
+            }
+            onPhotoProcessed();
+        }
+    }
+
+    private void onPhotoProcessed() {
+        UiThread.run(new Runnable() {
+            @Override
+            public void run() {
+                saveButton.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     private static final String TAG = ServiceEditorFragment.class.getSimpleName();
