@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
-import com.github.projectx.fragment.ServiceEditorFragment;
 import com.github.projectx.network.BaseController;
 import com.github.projectx.utils.Constants;
 import com.mikepenz.materialdrawer.Drawer;
@@ -37,12 +36,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
-        setUpNavDrawer();
         changeFragment(feedFragment, false);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        feedFragment.update();
+        setupNavDrawer();
+    }
 
     private void changeFragment(Fragment fragment, boolean addToBackStack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -62,11 +66,12 @@ public class MainActivity extends AppCompatActivity {
                 changeFragment(feedFragment, false);
                 break;
             case ADD_SERVICE:
-                if (BaseController.isAuthorized(getApplicationContext())) {
-                    changeFragment(new ServiceEditorFragment(), true);
-                } else {
+                if (!BaseController.isAuthorized(getApplicationContext())) {
                     Intent intent = new Intent(this, AuthActivity.class);
+                    intent.putExtra("NEXT", "NEW_SERVICE");
                     startActivity(intent);
+                } else {
+                    startActivity(new Intent(this, NewServiceActivity.class));
                 }
                 break;
             case MESSAGES:
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case LOGOUT:
                 BaseController.resetAuth(getApplicationContext());
-                setUpNavDrawer();
+                setupNavDrawer();
                 break;
             default:
                 break;
@@ -86,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setUpNavDrawer() {
+    private void setupNavDrawer() {
         String[] rows = getResources().getStringArray(R.array.menu);
         List<IDrawerItem> list = new ArrayList<>();
         int index = 0;

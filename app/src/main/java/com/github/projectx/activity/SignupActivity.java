@@ -32,17 +32,20 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     Button btnSignup;
 
     private AuthController controller;
+    private String next;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.signup_activity);
         ButterKnife.bind(this);
 
         controller = AuthController.getInstance(getApplicationContext());
         controller.setSignupResultListener(this);
 
         btnSignup.setEnabled(!controller.isSignupPerforming());
+
+        next = getIntent().getStringExtra("NEXT");
     }
 
     @Override
@@ -64,9 +67,9 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     public void onResult(boolean success, int message) {
         btnSignup.setEnabled(true);
         if (success) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            if (next.equals("NEW_SERVICE")) {
+                startActivity(new Intent(this, NewServiceActivity.class));
+            }
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

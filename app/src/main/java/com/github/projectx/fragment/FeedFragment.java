@@ -24,6 +24,7 @@ import java.util.List;
 
 public class FeedFragment extends Fragment implements ServiceController.ServiceListCallback {
 
+    private static final String TAG = FeedFragment.class.getSimpleName();
     private ServiceController serviceController;
     private RecyclerView recyclerView;
     private ServiceListAdapter adapter;
@@ -41,11 +42,13 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         recyclerView = (RecyclerView) view.findViewById(R.id.service_list_recycler);
         setUpRecyclerView();
         serviceController.setServiceListCallback(this);
-        serviceController.queryForServiceList(null, null, 1, 20);
+        update();
         return view;
     }
 
-
+    public void update() {
+        serviceController.queryForServiceList(null, null, 1, 20);
+    }
 
     @Override
     public void onDataLoaded(List<Service> services) {
@@ -54,13 +57,11 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         recyclerView.swapAdapter(adapter, false);
     }
 
-
     @Override
     public void dataLoadingFailed() {
         Log.d(TAG, "Loading service list from network failed!");
         Toast.makeText(getContext(), R.string.error_occured, Toast.LENGTH_SHORT).show();
     }
-
 
     private void setUpRecyclerView() {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -74,6 +75,4 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         super.onDestroyView();
         serviceController.setServiceListCallback(null);
     }
-
-    private static final String TAG = FeedFragment.class.getSimpleName();
 }

@@ -28,17 +28,20 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
     Button btnLogin;
 
     private AuthController controller;
+    private String next;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
+        setContentView(R.layout.auth_activity);
         ButterKnife.bind(this);
 
         controller = AuthController.getInstance(getApplicationContext());
         controller.setLoginResultListener(this);
 
         btnLogin.setEnabled(!controller.isLoginPerforming());
+
+        next = getIntent().getStringExtra("NEXT");
     }
 
     @Override
@@ -55,7 +58,12 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
 
     @OnClick(R.id.btn_register)
     public void signup() {
-        startActivity(new Intent(this, SignupActivity.class));
+        Intent intent = new Intent(this, SignupActivity.class);
+        if (next != null) {
+            intent.putExtra("NEXT", next);
+        }
+        startActivity(intent);
+        finish();
     }
 
 
@@ -63,9 +71,9 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
     public void onResult(boolean success, int message) {
         btnLogin.setEnabled(true);
         if (success) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            if (next.equals("NEW_SERVICE")) {
+                startActivity(new Intent(this, NewServiceActivity.class));
+            }
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
