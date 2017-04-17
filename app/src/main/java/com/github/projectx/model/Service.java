@@ -9,7 +9,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ivan on 15.04.17.
@@ -23,6 +25,7 @@ public class Service {
     private int price;
     private Date dateCreated = new Date();
     private long userId;
+    private List<String> photos = new ArrayList<>();
 
     public Service() {
     }
@@ -108,5 +111,13 @@ public class Service {
             service.setDateCreated(new Date(dateInMillis));
             return service;
         }
+    }
+
+    public List<String> getPhotos() {
+        return photos;
+    }
+
+    public void addPhoto(String base64photo) {
+        this.photos.add(base64photo);
     }
 }

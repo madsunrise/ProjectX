@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.github.projectx.R;
 import com.github.projectx.model.NewServiceRequest;
 import com.github.projectx.network.ServiceController;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -45,6 +47,8 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
     public EditText priceET;
     @BindView(R.id.photo1)
     public ImageView photo1;
+
+    private String mPhoto;
 
 
     @Override
@@ -88,6 +92,7 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
             return;
         }
         NewServiceRequest request = new NewServiceRequest(name, description, Integer.valueOf(price));
+        request.addPhoto(mPhoto);
         serviceController.sendNewService(request);
     }
 
@@ -115,6 +120,14 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
                 photo1.setImageBitmap(bitmap);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                mPhoto = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
+                stream.close();
+
+
+
             } catch (IOException e) {
                 Log.e(TAG, "Failed to pick image: " + e.getMessage());
             }
