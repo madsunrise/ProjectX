@@ -1,6 +1,5 @@
 package com.github.projectx.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +31,6 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     Button btnSignup;
 
     private AuthController controller;
-    private String next;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,8 +42,6 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
         controller.setSignupResultListener(this);
 
         btnSignup.setEnabled(!controller.isSignupPerforming());
-
-        next = getIntent().getStringExtra("NEXT");
     }
 
     @Override
@@ -67,9 +63,7 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     public void onResult(boolean success, int message) {
         btnSignup.setEnabled(true);
         if (success) {
-            if (next.equals("NEW_SERVICE")) {
-                startActivity(new Intent(this, NewServiceActivity.class));
-            }
+            setResult(RESULT_OK);
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

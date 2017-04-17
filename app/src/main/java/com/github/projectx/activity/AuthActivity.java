@@ -28,7 +28,6 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
     Button btnLogin;
 
     private AuthController controller;
-    private String next;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,8 +39,6 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
         controller.setLoginResultListener(this);
 
         btnLogin.setEnabled(!controller.isLoginPerforming());
-
-        next = getIntent().getStringExtra("NEXT");
     }
 
     @Override
@@ -58,22 +55,23 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
 
     @OnClick(R.id.btn_register)
     public void signup() {
-        Intent intent = new Intent(this, SignupActivity.class);
-        if (next != null) {
-            intent.putExtra("NEXT", next);
-        }
-        startActivity(intent);
-        finish();
+        startActivityForResult(new Intent(this, SignupActivity.class), 0);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
 
     @Override
     public void onResult(boolean success, int message) {
         btnLogin.setEnabled(true);
         if (success) {
-            if (next.equals("NEW_SERVICE")) {
-                startActivity(new Intent(this, NewServiceActivity.class));
-            }
+            setResult(RESULT_OK);
             finish();
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

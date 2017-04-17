@@ -69,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 break;
             case ADD_SERVICE:
                 if (!BaseController.isAuthorized(getApplicationContext())) {
-                    Intent intent = new Intent(this, AuthActivity.class);
-                    intent.putExtra("NEXT", "NEW_SERVICE");
-                    startActivity(intent);
+                    startActivityForResult(new Intent(this, AuthActivity.class), 0);
                 } else {
                     startActivity(new Intent(this, NewServiceActivity.class));
                 }
@@ -91,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
             drawer.closeDrawer();
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            startActivity(new Intent(this, NewServiceActivity.class));
+        }
     }
 
     private void setupNavDrawer() {
