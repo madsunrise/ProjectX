@@ -5,8 +5,7 @@ package com.github.projectx.utils;
  */
 
 public class Constants {
-    public static final int NAV_DRAWER_ARTISTS_SEARCH = 0;
-    public static final int NAV_DRAWER_MESSAGES = 1;
-    public static final int NAV_DRAWER_ADD_SERVICE = 2;
-    public static final int NAV_DRAWER_SETTINGS = 3;
+    public enum Menu {
+        SEARCH_SERVICE, ADD_SERVICE, MESSAGES, SETTINGS, LOGOUT
+    }
 }

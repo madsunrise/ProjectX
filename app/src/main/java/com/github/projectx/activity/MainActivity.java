@@ -13,24 +13,22 @@ import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.fragment.ServiceEditorFragment;
 import com.github.projectx.network.BaseController;
+import com.github.projectx.utils.Constants;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.github.projectx.utils.Constants.NAV_DRAWER_ADD_SERVICE;
-import static com.github.projectx.utils.Constants.NAV_DRAWER_ARTISTS_SEARCH;
-import static com.github.projectx.utils.Constants.NAV_DRAWER_MESSAGES;
-import static com.github.projectx.utils.Constants.NAV_DRAWER_SETTINGS;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private Drawer drawer;
@@ -57,60 +55,63 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void onDrawerPushed(int itemId) {
-        switch (itemId) {
-            case NAV_DRAWER_ARTISTS_SEARCH: {
+    private void onMenuItemClick(int itemId) {
+        Constants.Menu item = Constants.Menu.values()[itemId];
+        switch (item) {
+            case SEARCH_SERVICE:
                 changeFragment(feedFragment, false);
                 break;
-            }
-            case NAV_DRAWER_ADD_SERVICE: {
-                if (BaseController.authorized(getApplicationContext())) {
+            case ADD_SERVICE:
+                if (BaseController.isAuthorized(getApplicationContext())) {
                     changeFragment(new ServiceEditorFragment(), true);
                 } else {
                     Intent intent = new Intent(this, AuthActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    finish();
                 }
                 break;
-            }
+            case MESSAGES:
+                break;
+            case SETTINGS:
+                break;
+            case LOGOUT:
+                BaseController.resetAuth(getApplicationContext());
+                setUpNavDrawer();
+                break;
             default:
                 break;
         }
         if (drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         }
+
     }
 
     private void setUpNavDrawer() {
-        PrimaryDrawerItem artists = new PrimaryDrawerItem()
-                .withName(R.string.artists_search)
-                .withIdentifier(NAV_DRAWER_ARTISTS_SEARCH);
-        PrimaryDrawerItem messages = new PrimaryDrawerItem()
-                .withName(R.string.my_messages)
-                .withIdentifier(NAV_DRAWER_MESSAGES);
-        PrimaryDrawerItem addService = new PrimaryDrawerItem()
-                .withName(R.string.add_service)
-                .withSelectable(false)
-                .withIdentifier(NAV_DRAWER_ADD_SERVICE);
-        PrimaryDrawerItem settings = new PrimaryDrawerItem()
-                .withName(R.string.settings)
-                .withIdentifier(NAV_DRAWER_SETTINGS);
-
+        String[] rows = getResources().getStringArray(R.array.menu);
+        List<IDrawerItem> list = new ArrayList<>();
+        int index = 0;
+        for (String row : rows) {
+            if (row.equals("-")) {
+                list.add(new DividerDrawerItem());
+            } else if (index == Constants.Menu.LOGOUT.ordinal() && !BaseController.isAuthorized(getApplicationContext())) {
+                index++;
+            } else {
+                list.add(new PrimaryDrawerItem()
+                        .withName(row)
+                        .withIdentifier(index++));
+            }
+        }
+        IDrawerItem[] items = new IDrawerItem[list.size()];
+        list.toArray(items);
+        toolbar.setTitle(BaseController.isAuthorized(getApplicationContext()) ? "Authorized" : "Not authorized");
         drawer = new DrawerBuilder()
                 .withToolbar(toolbar)
                 .withActivity(this)
-                .addDrawerItems(
-                        artists,
-                        messages,
-                        addService,
-                        new DividerDrawerItem(),
-                        settings
-                )
+                .addDrawerItems(items)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        onDrawerPushed((int) drawerItem.getIdentifier());
+                        onMenuItemClick((int) drawerItem.getIdentifier());
                         return false;
                     }
                 })

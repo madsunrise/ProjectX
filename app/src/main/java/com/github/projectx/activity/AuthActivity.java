@@ -2,7 +2,6 @@ package com.github.projectx.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -20,15 +19,6 @@ import butterknife.OnClick;
  */
 
 public class AuthActivity extends AppCompatActivity implements AuthController.LoginResult {
-
-    static {
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .penaltyLog()
-                .penaltyDeath()
-                .build()
-        );
-    }
 
     @BindView(R.id.login)
     TextInputEditText login;

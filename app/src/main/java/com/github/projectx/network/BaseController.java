@@ -38,9 +38,17 @@ public abstract class BaseController {
         }
     }
 
-    public static boolean authorized(Context context) {
+    public static boolean isAuthorized(Context context) {
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return sp.contains(KEY1) && sp.contains(KEY2);
+    }
+
+    public static void resetAuth(Context context) {
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = sp.edit();
+        e.remove(KEY1);
+        e.remove(KEY2);
+        e.apply();
     }
 
     private void init(Context context) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="menu">
+        <item>Поиск услуги</item>
+        <item>Добавить услугу</item>
+        <item>Мои сообщения</item>
+        <item>-</item>
+        <item>Настройки</item>
+        <item>Выход</item>
+    </array>
+</resources>

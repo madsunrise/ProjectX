@@ -27,4 +27,5 @@
     <string name="save">Сохранить</string>
     <string name="fill_all_fields">Заполните все поля!</string>
     <string name="add_service">Добавить услугу</string>
+    <string name="logout">Logout</string>
 </resources>

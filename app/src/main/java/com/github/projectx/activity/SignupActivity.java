@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -50,7 +49,6 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     protected void onDestroy() {
         super.onDestroy();
         controller.setSignupResultListener(null);
-        Log.d("3423", "onDestroy");
     }
 
     @OnClick(R.id.btn_signup)
