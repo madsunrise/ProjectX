@@ -1,21 +1,31 @@
 package com.github.projectx.fragment;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.projectx.R;
 import com.github.projectx.model.NewServiceRequest;
 import com.github.projectx.network.ServiceController;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by ivan on 17.04.17.
@@ -25,12 +35,16 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
 
     private ServiceController serviceController;
 
+    public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
+
     @BindView(R.id.service_name_ET)
     public EditText nameET;
     @BindView(R.id.service_description_ET)
     public EditText descriptionET;
     @BindView(R.id.service_price_ET)
     public EditText priceET;
+    @BindView(R.id.photo1)
+    public ImageView photo1;
 
 
     @Override
@@ -45,6 +59,12 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
         serviceController.setServiceEditCallback(this);
         View view = inflater.inflate(R.layout.service_editor_fragment, container, false);
         ButterKnife.bind(this, view);
+        photo1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(v.getId());
+            }
+        });
         return view;
     }
 
@@ -72,12 +92,40 @@ public class ServiceEditorFragment extends Fragment implements ServiceController
     }
 
 
+
+
+
+    private void showDialog(long id) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_GALLERY_REQUEST);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_GALLERY_REQUEST &&
+                resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri == null) {
+                return;
+            }
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                photo1.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to pick image: " + e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         serviceController.setServiceEditCallback(null);
     }
-
 
     private static final String TAG = ServiceEditorFragment.class.getSimpleName();
 }
