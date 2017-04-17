@@ -18,29 +18,33 @@
         android:hint="@string/description"
         android:layout_marginTop="30dp"/>
 
+        
+    <EditText
+        android:id="@+id/service_price_ET"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="7"
+        android:hint="@string/price_in_rub"
+        android:layout_marginTop="30dp"/>
+
+
     <LinearLayout
+        android:id="@+id/photo_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        
-        <EditText
-            android:id="@+id/service_price_ET"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="7"
-            android:hint="@string/price_in_rub"
-            android:layout_marginTop="30dp"/>
 
         <ImageView
-            android:id="@+id/photo1"
+            android:id="@+id/default_photo"
             android:layout_width="wrap_content"
             android:layout_height="75dp"
             android:adjustViewBounds="true"
             android:src="@drawable/default_pic" />
 
-        
     </LinearLayout>
+
+
 
     <Button
         android:id="@+id/save"

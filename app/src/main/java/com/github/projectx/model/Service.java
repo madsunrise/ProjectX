@@ -117,6 +117,10 @@ public class Service {
         return photos;
     }
 
+    public void setPhotos(List<String> photos) {
+        this.photos = photos;
+    }
+
     public void addPhoto(String base64photo) {
         this.photos.add(base64photo);
     }
