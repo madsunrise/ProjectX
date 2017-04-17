@@ -25,7 +25,7 @@ public class AuthController extends BaseController {
         api = retrofit.create(AuthAPI.class);
     }
 
-    public static AuthController getInstance(Context context) {
+    public static synchronized AuthController getInstance(Context context) {
         if (instance == null) {
             instance = new AuthController(context);
         }

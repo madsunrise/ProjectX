@@ -1,18 +1,15 @@
-package com.github.projectx;
+package com.github.projectx.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.projectx.R;
 import com.github.projectx.model.Service;
 
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by ivan on 16.04.17.
@@ -20,11 +17,9 @@ import butterknife.ButterKnife;
 
 public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.MyViewHolder> {
 
-    private final Context context;
     private final List<Service> serviceList;
 
-    public ServiceListAdapter(Context context, List<Service> serviceList) {
-        this.context = context;
+    public ServiceListAdapter(List<Service> serviceList) {
         this.serviceList = serviceList;
     }
 

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.github.projectx.R;
-import com.github.projectx.ServiceListAdapter;
+import com.github.projectx.adapter.ServiceListAdapter;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.ServiceController;
 
@@ -50,7 +50,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     @Override
     public void onDataLoaded(List<Service> services) {
         Log.d(TAG, "Service list has been loaded");
-        adapter = new ServiceListAdapter(getContext(), services);
+        adapter = new ServiceListAdapter(services);
         recyclerView.swapAdapter(adapter, false);
     }
 
