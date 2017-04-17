@@ -22,7 +22,7 @@ import java.util.List;
  * Created by ivan on 16.04.17.
  */
 
-public class FeedFragment extends Fragment implements ServiceController.ServiceListCallback {
+public class FeedFragment extends Fragment implements ServiceController.ServiceListCallback, View.OnClickListener {
 
     private static final String TAG = FeedFragment.class.getSimpleName();
     private ServiceController serviceController;
@@ -53,7 +53,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     @Override
     public void onDataLoaded(List<Service> services) {
         Log.d(TAG, "Service list has been loaded");
-        adapter = new ServiceListAdapter(services);
+        adapter = new ServiceListAdapter(services, this);
         recyclerView.swapAdapter(adapter, false);
     }
 
@@ -68,11 +68,25 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setOnClickListener(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         serviceController.setServiceListCallback(null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int itemPosition = recyclerView.getChildLayoutPosition(v);
+        Service item = adapter.getServiceList().get(itemPosition);
+        CHF chf = (CHF) getActivity();
+        chf.openService(item);
+    }
+
+
+    public interface CHF {
+        void openService(Service service);
     }
 }

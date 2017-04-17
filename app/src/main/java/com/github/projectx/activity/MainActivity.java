@@ -11,6 +11,8 @@ import android.view.View;
 
 import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
+import com.github.projectx.fragment.ServiceFragment;
+import com.github.projectx.model.Service;
 import com.github.projectx.network.BaseController;
 import com.github.projectx.utils.Constants;
 import com.mikepenz.materialdrawer.Drawer;
@@ -26,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FeedFragment.CHF {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -121,5 +123,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+    }
+
+    @Override
+    public void openService(Service service) {
+        ServiceFragment sf = new ServiceFragment();
+        Bundle args = new Bundle();
+        args.putLong("id", service.getId());
+        sf.setArguments(args);
+        changeFragment(sf, true);
     }
 }

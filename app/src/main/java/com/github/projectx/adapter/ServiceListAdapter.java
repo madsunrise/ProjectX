@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.projectx.R;
+import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.model.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,9 +20,36 @@ import java.util.List;
 public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.MyViewHolder> {
 
     private final List<Service> serviceList;
+    private final FeedFragment feedFragment;
 
-    public ServiceListAdapter(List<Service> serviceList) {
-        this.serviceList = serviceList;
+    public ServiceListAdapter(List<Service> serviceList, FeedFragment fragment) {
+        this.serviceList = Collections.unmodifiableList(serviceList);
+        feedFragment = fragment;
+    }
+
+    public List<Service> getServiceList() {
+        return serviceList;
+    }
+
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.service_list_item, parent, false);
+        itemView.setOnClickListener(feedFragment);
+        return new MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
+        Service service = serviceList.get(position);
+        holder.name.setText(service.getName());
+        holder.price.setText(String.valueOf(service.getPrice()));
+        holder.rating.setText(String.valueOf(service.getRating()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return serviceList.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -34,28 +63,6 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
             price = (TextView) view.findViewById(R.id.service_price);
             rating = (TextView) view.findViewById(R.id.service_rating);
         }
-    }
-
-
-    @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.service_list_item, parent, false);
-        return new MyViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
-        Service service = serviceList.get(position);
-        holder.name.setText(service.getName());
-        holder.price.setText(String.valueOf(service.getPrice()));
-        holder.rating.setText(String.valueOf(service.getRating()));
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return serviceList.size();
     }
 }
 
