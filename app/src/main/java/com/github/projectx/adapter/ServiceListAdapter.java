@@ -49,7 +49,7 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
         holder.name.setText(service.getName());
 
         int price = service.getPrice();
-        String priceText = price + ' ' + feedFragment.getString(R.string.rub_per_service);
+        String priceText = price + " " + feedFragment.getString(R.string.rub_per_service);
         holder.price.setText(priceText);
 
         List<String> photos = service.getPhotos();
