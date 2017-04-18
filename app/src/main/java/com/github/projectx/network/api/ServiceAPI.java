@@ -17,13 +17,17 @@ import retrofit2.http.Query;
  */
 
 public interface ServiceAPI {
-    @GET("services/")
+    @GET("services")
     Call<List<Service>> getListServices(
             @Query("category") String category,
             @Query("sort") String sort,
             @Query("page") Integer page,
             @Query("limit") int limit);     // required param
 
+    @GET("my_services")
+    Call<List<Service>> getMyServices(
+            @Query("page") Integer page,
+            @Query("limit") int limit);     // required param
 
     @POST("services/")
     Call<Void> createService(@Body NewServiceRequest request);
