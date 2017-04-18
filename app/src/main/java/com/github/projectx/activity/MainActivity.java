@@ -87,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                     feedFragment.loadUser();
                 }
                 break;
-            case MESSAGES:
-                break;
             case SETTINGS:
                 break;
             case LOGOUT:
@@ -135,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         }
         IDrawerItem[] items = new IDrawerItem[list.size()];
         list.toArray(items);
-        toolbar.setTitle(BaseController.isAuthorized(getApplicationContext()) ? "Authorized" : "Not authorized");
         drawer = new DrawerBuilder()
                 .withToolbar(toolbar)
                 .withActivity(this)
