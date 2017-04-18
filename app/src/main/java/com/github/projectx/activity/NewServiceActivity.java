@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,6 +61,8 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     ProgressBar progressBar;
     private ServiceController serviceController;
 
+    private ArrayList<String> uris = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +80,33 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
                 startActivityForResult(Intent.createChooser(intent, getString(R.string.choose_photo)), PICK_IMAGE_GALLERY_REQUEST);
             }
         });
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putStringArrayList("uris", uris);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            uris = savedInstanceState.getStringArrayList("uris");
+        }
+
+        if (uris == null) {
+            uris = new ArrayList<>();
+        }
+        for (ListIterator<String> i = uris.listIterator(); i.hasNext(); ) {
+            String uri = i.next();
+            try {
+                addURI(Uri.parse(uri), true);
+            } catch (IOException e) {
+                i.remove();
+            }
+        }
     }
 
     @OnClick(R.id.save)
@@ -121,12 +151,9 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
             }
             Uri uri = data.getData();
             try {
-                final Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                addPhotoToScreen(bitmap);
-
+                addURI(uri, false);
                 saveButton.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
-                photoProcessor.execute(new PhotoEncoder(bitmap));
             } catch (IOException e) {
                 Log.e(TAG, "Failed to pick image: " + e.getMessage());
             }
@@ -137,6 +164,15 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     public void onDestroy() {
         super.onDestroy();
         serviceController.setServiceEditCallback(null);
+    }
+
+    private void addURI(Uri uri, boolean restore) throws IOException {
+        final Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+        addPhotoToScreen(bitmap);
+        photoProcessor.execute(new PhotoEncoder(bitmap));
+        if (!restore) {
+            uris.add(uri.toString());
+        }
     }
 
     private void addPhotoToScreen(Bitmap bitmap) {
@@ -172,9 +208,11 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
 
     private class PhotoEncoder implements Runnable {
         private Bitmap bitmap;
+
         private PhotoEncoder(Bitmap bitmap) {
             this.bitmap = bitmap;
         }
+
         @Override
         public void run() {
             try {
