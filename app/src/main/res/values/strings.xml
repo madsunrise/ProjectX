@@ -28,4 +28,5 @@
     <string name="registration">Регистрация</string>
     <string name="choose_photo">Выберите фото</string>
     <string name="rub_per_service">\u20BD / усл.</string>
+    <string name="need_permission">Необходимо разрешение на доступ к хранилищу</string>
 </resources>

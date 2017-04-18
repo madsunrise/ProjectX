@@ -1,14 +1,17 @@
 package com.github.projectx.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,6 +45,7 @@ import butterknife.OnClick;
 public class NewServiceActivity extends AppCompatActivity implements ServiceController.ServiceEditCallback {
     public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
     private static final String TAG = NewServiceActivity.class.getSimpleName();
+    private static final int REQUEST_CODE = 101;
     private final Service service = new Service();
     private final List<String> encodedPhotos = new ArrayList<>();
     private final ExecutorService photoProcessor = Executors.newSingleThreadExecutor();
@@ -60,7 +64,6 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     @BindView(R.id.progress)
     ProgressBar progressBar;
     private ServiceController serviceController;
-
     private ArrayList<String> uris = new ArrayList<>();
 
     @Override
@@ -74,6 +77,11 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         addPhotoIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkAccess()) {
+                    requestAccess();
+                    return;
+                }
+
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -177,18 +185,14 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
 
     private void addPhotoToScreen(Bitmap bitmap) {
         ImageView image = new ImageView(getApplicationContext());
+        int size = (int) getResources().getDimension(R.dimen.image_size);
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        image.setLayoutParams(new LinearLayout.LayoutParams(convertToPx(75), convertToPx(75)));
+        image.setLayoutParams(new LinearLayout.LayoutParams(size, size));
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        float k = (float) convertToPx(75) / height;
+        float k = (float) size / height;
         image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, Math.round(width * k), Math.round(height * k), false));
         photoContainer.addView(image);
-    }
-
-    private int convertToPx(int dp) {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     private void onPhotoProcessed() {
@@ -199,6 +203,35 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
                 progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    private boolean checkAccess() {
+        return ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestAccess() {
+        if (!checkAccess()) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.choose_photo)), PICK_IMAGE_GALLERY_REQUEST);
+            } else {
+                Toast.makeText(this, R.string.need_permission, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private class PhotoEncoder implements Runnable {
