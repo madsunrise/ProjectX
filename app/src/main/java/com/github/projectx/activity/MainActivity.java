@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                     startActivityForResult(new Intent(this, AuthActivity.class), Constants.RequestCode.MY_SERVICES.ordinal());
                 } else {
                     changeFragment(feedFragment, true);
-                    feedFragment.loadUser();
+                    feedFragment.loadMyServices();
                 }
                 break;
             case MESSAGES:
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                     break;
                 case MY_SERVICES:
                     changeFragment(feedFragment, true);
-                    feedFragment.loadUser();
+                    feedFragment.loadMyServices();
                     break;
             }
 

@@ -54,8 +54,8 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         serviceController.queryForServiceList(null, null, 1, 20);
     }
 
-    public void loadUser() {
-        serviceController.queryForServiceList(null, null, 1, 20);
+    public void loadMyServices() {
+        serviceController.queryForMyServices(1, 20);
     }
 
     @Override

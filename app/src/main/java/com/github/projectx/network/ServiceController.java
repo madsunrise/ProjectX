@@ -96,19 +96,33 @@ public class ServiceController extends BaseController {
                                     final String sort,
                                     final Integer page,
                                     final int limit) {
-        this.queryForServiceList(null, category, sort, page, limit);
+        serviceListExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<Service> services = requestServiceList(category, sort, page, limit);
+                UiThread.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (serviceListCallback != null) {
+                            if (services != null) {
+                                serviceListCallback.onDataLoaded(services);
+                            }
+                            else {
+                                serviceListCallback.dataLoadingFailed();
+                            }
+                        }
+                    }
+                });
+            }});
     }
 
 
-    public void queryForServiceList(final Long userId,
-                                    final String category,
-                                    final String sort,
-                                    final Integer page,
+    public void queryForMyServices(final Integer page,
                                     final int limit) {
         serviceListExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Service> services = requestServiceList(userId, category, sort, page, limit);
+                final List<Service> services = requestMyServices(page, limit);
                 UiThread.run(new Runnable() {
                     @Override
                     public void run() {
@@ -128,6 +142,10 @@ public class ServiceController extends BaseController {
 
 
 
+
+
+
+
     private boolean createService(NewServiceRequest request) {
         Call<Void> call = api.createService(request);
         try {
@@ -139,6 +157,7 @@ public class ServiceController extends BaseController {
             return false;
         }
     }
+
 
     private Service requestServiceInfo(long id) {
         Call<Service> call = api.getService(id);
@@ -156,9 +175,8 @@ public class ServiceController extends BaseController {
     }
 
 
-
-    private List<Service> requestServiceList(Long userId, String category, String sort, Integer page, int limit) {
-        Call<List<Service>> call = api.getListServices(userId, category, sort, page, limit);
+    private List<Service> requestServiceList(String category, String sort, Integer page, int limit) {
+        Call<List<Service>> call = api.getListServices(category, sort, page, limit);
         try {
             Response<List<Service>> response = call.execute();
             if (response.isSuccessful()) {
@@ -171,6 +189,23 @@ public class ServiceController extends BaseController {
             return null;
         }
     }
+
+
+    private List<Service> requestMyServices(Integer page, int limit) {
+        Call<List<Service>> call = api.getMyServices(page, limit);
+        try {
+            Response<List<Service>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        }
+        catch (IOException ex) {
+            Log.d(TAG, "Failed querying service list! " + ex.getMessage());
+            return null;
+        }
+    }
+
 
 
     public interface ServiceListCallback {
