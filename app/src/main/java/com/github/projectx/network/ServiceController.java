@@ -90,15 +90,16 @@ public class ServiceController extends BaseController {
     }
 
 
+
+
     public void queryForServiceList(final String category,
                                     final String sort,
                                     final Integer page,
                                     final int limit) {
-
         serviceListExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Service> services = requestListService(category, sort, page, limit);
+                final List<Service> services = requestServiceList(category, sort, page, limit);
                 UiThread.run(new Runnable() {
                     @Override
                     public void run() {
@@ -112,8 +113,35 @@ public class ServiceController extends BaseController {
                         }
                     }
                 });
-        }});
+            }});
     }
+
+
+    public void queryForMyServices(final Integer page,
+                                    final int limit) {
+        serviceListExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<Service> services = requestMyServices(page, limit);
+                UiThread.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (serviceListCallback != null) {
+                            if (services != null) {
+                                serviceListCallback.onDataLoaded(services);
+                            }
+                            else {
+                                serviceListCallback.dataLoadingFailed();
+                            }
+                        }
+                    }
+                });
+            }});
+    }
+
+
+
+
 
 
 
@@ -129,6 +157,7 @@ public class ServiceController extends BaseController {
             return false;
         }
     }
+
 
     private Service requestServiceInfo(long id) {
         Call<Service> call = api.getService(id);
@@ -146,7 +175,7 @@ public class ServiceController extends BaseController {
     }
 
 
-    private List<Service> requestListService(String category, String sort, Integer page, int limit) {
+    private List<Service> requestServiceList(String category, String sort, Integer page, int limit) {
         Call<List<Service>> call = api.getListServices(category, sort, page, limit);
         try {
             Response<List<Service>> response = call.execute();
@@ -160,6 +189,23 @@ public class ServiceController extends BaseController {
             return null;
         }
     }
+
+
+    private List<Service> requestMyServices(Integer page, int limit) {
+        Call<List<Service>> call = api.getMyServices(page, limit);
+        try {
+            Response<List<Service>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        }
+        catch (IOException ex) {
+            Log.d(TAG, "Failed querying service list! " + ex.getMessage());
+            return null;
+        }
+    }
+
 
 
     public interface ServiceListCallback {
