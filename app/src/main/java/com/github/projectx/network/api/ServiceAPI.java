@@ -19,6 +19,7 @@ import retrofit2.http.Query;
 public interface ServiceAPI {
     @GET("services/")
     Call<List<Service>> getListServices(
+            @Query("user") Long userId,
             @Query("category") String category,
             @Query("sort") String sort,
             @Query("page") Integer page,

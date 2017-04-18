@@ -90,15 +90,25 @@ public class ServiceController extends BaseController {
     }
 
 
+
+
     public void queryForServiceList(final String category,
                                     final String sort,
                                     final Integer page,
                                     final int limit) {
+        this.queryForServiceList(null, category, sort, page, limit);
+    }
 
+
+    public void queryForServiceList(final Long userId,
+                                    final String category,
+                                    final String sort,
+                                    final Integer page,
+                                    final int limit) {
         serviceListExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Service> services = requestListService(category, sort, page, limit);
+                final List<Service> services = requestServiceList(userId, category, sort, page, limit);
                 UiThread.run(new Runnable() {
                     @Override
                     public void run() {
@@ -112,7 +122,7 @@ public class ServiceController extends BaseController {
                         }
                     }
                 });
-        }});
+            }});
     }
 
 
@@ -146,8 +156,9 @@ public class ServiceController extends BaseController {
     }
 
 
-    private List<Service> requestListService(String category, String sort, Integer page, int limit) {
-        Call<List<Service>> call = api.getListServices(category, sort, page, limit);
+
+    private List<Service> requestServiceList(Long userId, String category, String sort, Integer page, int limit) {
+        Call<List<Service>> call = api.getListServices(userId, category, sort, page, limit);
         try {
             Response<List<Service>> response = call.execute();
             if (response.isSuccessful()) {
