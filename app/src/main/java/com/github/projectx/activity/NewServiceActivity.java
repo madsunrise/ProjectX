@@ -191,11 +191,6 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private int convertToDp(int px) {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
     private void onPhotoProcessed() {
         UiThread.run(new Runnable() {
             @Override
@@ -217,7 +212,7 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         public void run() {
             try {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 40, stream);
                 String encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
                 stream.close();
                 encodedPhotos.add(encoded);

@@ -21,7 +21,6 @@ public class Service {
     private long id;
     private String name;
     private String description;
-    private int rating;
     private int price;
     private Date dateCreated = new Date();
     private long userId;
@@ -30,10 +29,9 @@ public class Service {
     public Service() {
     }
 
-    public Service(String name, String description, int rating, int price) {
+    public Service(String name, String description, int price) {
         this.name = name;
         this.description = description;
-        this.rating = rating;
         this.price = price;
     }
 
@@ -67,14 +65,6 @@ public class Service {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
     }
 
     public int getPrice() {

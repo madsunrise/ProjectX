@@ -49,10 +49,8 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
         holder.name.setText(service.getName());
 
         int price = service.getPrice();
-        String priceText = price + " \u20BD / усл.";
+        String priceText = price + ' ' + feedFragment.getString(R.string.rub_per_service);
         holder.price.setText(priceText);
-
-        holder.rating.setText(String.valueOf(service.getRating()));
 
         List<String> photos = service.getPhotos();
         if (!photos.isEmpty()) {
@@ -69,14 +67,12 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView price;
-        TextView rating;
         ImageView photo;
 
         MyViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.service_name);
             price = (TextView) view.findViewById(R.id.service_price);
-            rating = (TextView) view.findViewById(R.id.service_rating);
             photo = (ImageView) view.findViewById(R.id.service_photo);
         }
     }
