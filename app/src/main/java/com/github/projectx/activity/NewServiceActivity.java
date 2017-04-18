@@ -39,6 +39,11 @@ import butterknife.OnClick;
  */
 
 public class NewServiceActivity extends AppCompatActivity implements ServiceController.ServiceEditCallback {
+    public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
+    private static final String TAG = NewServiceActivity.class.getSimpleName();
+    private final Service service = new Service();
+    private final List<String> encodedPhotos = new ArrayList<>();
+    private final ExecutorService photoProcessor = Executors.newSingleThreadExecutor();
     @BindView(R.id.name)
     public TextInputEditText name;
     @BindView(R.id.description)
@@ -47,21 +52,13 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     public TextInputEditText price;
     @BindView(R.id.save)
     public Button saveButton;
-
     @BindView(R.id.default_photo)
     public ImageView addPhotoIV;
     @BindView(R.id.photo_container)
     LinearLayout photoContainer;
     @BindView(R.id.progress)
     ProgressBar progressBar;
-
     private ServiceController serviceController;
-    public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
-
-    private final Service service = new Service();
-    private final List<String> encodedPhotos = new ArrayList<>();
-
-    private final ExecutorService photoProcessor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,8 +78,6 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
             }
         });
     }
-
-
 
     @OnClick(R.id.save)
     public void sendService() {
@@ -106,8 +101,6 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         serviceController.sendNewService(request);
     }
 
-
-
     @Override
     public void onRequestComplete(boolean success) {
         progressBar.setVisibility(View.GONE);
@@ -118,8 +111,6 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         }
         finish();
     }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -142,21 +133,21 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         serviceController.setServiceEditCallback(null);
     }
 
-
-
     private void addPhotoToScreen(Bitmap bitmap) {
         ImageView image = new ImageView(getApplicationContext());
-        image.setMaxHeight(convertToPx(75));
-        image.setAdjustViewBounds(true);
-        image.setImageBitmap(bitmap);
-        photoContainer.addView(image, 0);
+        image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        image.setLayoutParams(new LinearLayout.LayoutParams(convertToPx(75), convertToPx(75)));
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float k = (float) convertToPx(75) / height;
+        image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, Math.round(width * k), Math.round(height * k), false));
+        photoContainer.addView(image);
     }
 
     private int convertToPx(int dp) {
@@ -164,24 +155,9 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private class PhotoEncoder implements Runnable {
-        private Bitmap bitmap;
-        private PhotoEncoder(Bitmap bitmap) {
-            this.bitmap = bitmap;
-        }
-        @Override
-        public void run() {
-            try {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                String encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
-                stream.close();
-                encodedPhotos.add(encoded);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to compress image: " + e.getMessage());
-            }
-            onPhotoProcessed();
-        }
+    private int convertToDp(int px) {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     private void onPhotoProcessed() {
@@ -194,6 +170,24 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         });
     }
 
-    private static final String TAG = NewServiceActivity.class.getSimpleName();
+    private class PhotoEncoder implements Runnable {
+        private Bitmap bitmap;
+        private PhotoEncoder(Bitmap bitmap) {
+            this.bitmap = bitmap;
+        }
+        @Override
+        public void run() {
+            try {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                String encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
+                stream.close();
+                encodedPhotos.add(encoded);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to compress image: " + e.getMessage());
+            }
+            onPhotoProcessed();
+        }
+    }
 }
 

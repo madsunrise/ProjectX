@@ -20,7 +20,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by ivan on 16.04.17.
@@ -47,11 +46,15 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         ButterKnife.bind(this, view);
         setUpRecyclerView();
         serviceController.setServiceListCallback(this);
-        update();
+        loadAll();
         return view;
     }
 
-    public void update() {
+    public void loadAll() {
+        serviceController.queryForServiceList(null, null, 1, 20);
+    }
+
+    public void loadUser() {
         serviceController.queryForServiceList(null, null, 1, 20);
     }
 
@@ -90,14 +93,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         chf.openService(item);
     }
 
-    @OnClick(R.id.floating_btn)
-    public void onFabClick() {
-        ((CHF) getActivity()).addService();
-    }
-
     public interface CHF {
         void openService(Service service);
-
-        void addService();
     }
 }

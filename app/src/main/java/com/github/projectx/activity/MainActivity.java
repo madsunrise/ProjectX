@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
     @Override
     protected void onStart() {
         super.onStart();
-        feedFragment.update();
+        feedFragment.loadAll();
         setupNavDrawer();
     }
 
@@ -61,10 +61,9 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         transaction.commitAllowingStateLoss();
     }
 
-    @Override
     public void addService() {
         if (!BaseController.isAuthorized(getApplicationContext())) {
-            startActivityForResult(new Intent(this, AuthActivity.class), 0);
+            startActivityForResult(new Intent(this, AuthActivity.class), Constants.RequestCode.NEW_SERVICE.ordinal());
         } else {
             startActivity(new Intent(this, NewServiceActivity.class));
         }
@@ -75,9 +74,18 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         switch (item) {
             case SEARCH_SERVICE:
                 changeFragment(feedFragment, false);
+                feedFragment.loadAll();
                 break;
             case ADD_SERVICE:
                 addService();
+                break;
+            case MY_SERVICES:
+                if (!BaseController.isAuthorized(getApplicationContext())) {
+                    startActivityForResult(new Intent(this, AuthActivity.class), Constants.RequestCode.MY_SERVICES.ordinal());
+                } else {
+                    changeFragment(feedFragment, true);
+                    feedFragment.loadUser();
+                }
                 break;
             case MESSAGES:
                 break;
@@ -86,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
             case LOGOUT:
                 BaseController.resetAuth(getApplicationContext());
                 setupNavDrawer();
-                break;
-            default:
                 break;
         }
         if (drawer.isDrawerOpen()) {
@@ -99,7 +105,16 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            startActivity(new Intent(this, NewServiceActivity.class));
+            switch (Constants.RequestCode.values()[requestCode]) {
+                case NEW_SERVICE:
+                    startActivity(new Intent(this, NewServiceActivity.class));
+                    break;
+                case MY_SERVICES:
+                    changeFragment(feedFragment, true);
+                    feedFragment.loadUser();
+                    break;
+            }
+
         }
     }
 

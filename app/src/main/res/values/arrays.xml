@@ -3,6 +3,7 @@
     <array name="menu">
         <item>Поиск услуги</item>
         <item>Добавить услугу</item>
+        <item>Мои услуги</item>
         <item>Мои сообщения</item>
         <item>-</item>
         <item>Настройки</item>
