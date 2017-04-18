@@ -50,7 +50,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     @Override
     public void onDataLoaded(List<Service> services) {
         Log.d(TAG, "Service list has been loaded");
-        adapter = new ServiceListAdapter(services);
+        adapter = new ServiceListAdapter(getContext(), services);
         recyclerView.swapAdapter(adapter, false);
     }
 

@@ -28,7 +28,7 @@ import static com.github.projectx.network.BaseController.CookieHelper.KEY2;
 
 public abstract class BaseController {
 
-    private static final String BASE_URL = "http://212.109.192.197:8081/v1/";
+    public static final String BASE_URL = "http://212.109.192.197:8081/v1/";
 
     static Retrofit retrofit;
 
