@@ -41,13 +41,14 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
-        changeFragment(feedFragment, false);
+        if (savedInstanceState == null) {
+            changeFragment(feedFragment, false);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        feedFragment.loadAll();
         setupNavDrawer();
     }
 
