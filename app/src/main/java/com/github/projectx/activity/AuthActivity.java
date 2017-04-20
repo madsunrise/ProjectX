@@ -18,7 +18,7 @@ import butterknife.OnClick;
  * Created by igor on 16.04.17.
  */
 
-public class AuthActivity extends AppCompatActivity implements AuthController.LoginResult {
+public class AuthActivity extends AppCompatActivity implements AuthController.LoginListener {
 
     @BindView(R.id.login)
     TextInputEditText login;
