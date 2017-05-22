@@ -21,6 +21,6 @@
         <activity android:name=".activity.SignupActivity" />
         <activity android:name=".activity.AuthActivity" />
         <activity android:name=".activity.NewServiceActivity" />
+        <activity android:name=".activity.SettingsActivity" />
     </application>
-
 </manifest>

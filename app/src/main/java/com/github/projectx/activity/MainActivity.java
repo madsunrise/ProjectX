@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 }
                 break;
             case SETTINGS:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 break;
             case LOGOUT:
                 BaseController.resetAuth(getApplicationContext());
