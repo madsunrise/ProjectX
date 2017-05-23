@@ -80,7 +80,7 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         price.setText(priceStr);
 
         List<String> photoUrls = service.getPhotos();
-        for (String url: photoUrls) {
+        for (String url : photoUrls) {
             ImageView image = new ImageView(getContext());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(0, 10, 0, 0);
@@ -101,10 +101,10 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
     public void composeEmail() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:"));
-        intent.putExtra(Intent.EXTRA_EMAIL, service.getUserEmail());
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] {service.getUserEmail()});
         intent.putExtra(Intent.EXTRA_SUBJECT, service.getName());
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
+            getActivity().startActivity(intent);
         }
     }
 }
