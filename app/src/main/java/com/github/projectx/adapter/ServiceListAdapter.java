@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.model.Service;
@@ -54,8 +55,7 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
         List<String> photos = service.getPhotos();
         if (!photos.isEmpty()) {
             String mainPhotoURL = NetHelper.BASE_URL + photos.get(0);
-            holder.photo.setImageResource(R.drawable.default_pic);
-            //Glide.with(feedFragment).load(mainPhotoURL).centerCrop().into(holder.photo);
+            Glide.with(feedFragment).load(mainPhotoURL).centerCrop().into(holder.photo);
         }
     }
 

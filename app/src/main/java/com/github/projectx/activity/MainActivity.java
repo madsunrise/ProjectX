@@ -15,6 +15,8 @@ import com.github.projectx.fragment.ServiceFragment;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.AuthController;
 import com.github.projectx.utils.Constants;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         ButterKnife.bind(this);
         if (savedInstanceState == null) {
             changeFragment(feedFragment, false);
+            toolbar.setTitle(R.string.all_services);
         }
     }
 
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
             case SEARCH_SERVICE:
                 changeFragment(feedFragment, false);
                 feedFragment.loadAll();
+                toolbar.setTitle(R.string.all_services);
                 break;
             case ADD_SERVICE:
                 addService();
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 } else {
                     changeFragment(feedFragment, true);
                     feedFragment.loadMyServices();
+                    toolbar.setTitle(R.string.my_services);
                 }
                 break;
             case SETTINGS:
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 case MY_SERVICES:
                     changeFragment(feedFragment, true);
                     feedFragment.loadMyServices();
+                    toolbar.setTitle(R.string.my_services);
                     break;
             }
 
@@ -136,8 +142,15 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         }
         IDrawerItem[] items = new IDrawerItem[list.size()];
         list.toArray(items);
+
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header)
+                .build();
+
         drawer = new DrawerBuilder()
                 .withToolbar(toolbar)
+                .withAccountHeader(headerResult)
                 .withActivity(this)
                 .addDrawerItems(items)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {

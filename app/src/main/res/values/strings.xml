@@ -29,4 +29,6 @@
     <string name="choose_photo">Выберите фото</string>
     <string name="rub_per_service">\u20BD / усл.</string>
     <string name="need_permission">Необходимо разрешение на доступ к хранилищу</string>
+    <string name="all_services">Все артисты</string>
+    <string name="my_services">Мои услуги</string>
 </resources>

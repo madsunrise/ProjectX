@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.github.projectx.R;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.ServiceController;
@@ -21,6 +22,8 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.github.projectx.network.NetHelper.BASE_URL;
 
 /**
  * Created by igor on 17.04.17.
@@ -73,8 +76,7 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         List<String> photoUrls = service.getPhotos();
         for (String url: photoUrls) {
             ImageView image = new ImageView(getContext());
-            image.setImageResource(R.drawable.default_pic);
-            //Glide.with(this).load(BASE_URL + url).into(image);
+            Glide.with(this).load(BASE_URL + url).into(image);
             container.addView(image);
         }
     }
