@@ -33,6 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/title"
+                    android:inputType="textCapSentences"
                     android:maxLength="100" />
             </android.support.design.widget.TextInputLayout>
 
@@ -45,7 +46,8 @@
                     android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/description" />
+                    android:hint="@string/description"
+                    android:inputType="textCapSentences" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -98,6 +100,7 @@
 
                 <Button
                     android:id="@+id/save"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"

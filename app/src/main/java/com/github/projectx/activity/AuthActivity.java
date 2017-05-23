@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -26,6 +27,8 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
     TextInputEditText password;
     @BindView(R.id.btn_login)
     Button btnLogin;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private AuthController controller;
 
@@ -39,6 +42,16 @@ public class AuthActivity extends AppCompatActivity implements AuthController.Lo
         controller.setLoginResultListener(this);
 
         btnLogin.setEnabled(!controller.isLoginPerforming());
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     @Override

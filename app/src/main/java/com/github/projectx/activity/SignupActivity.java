@@ -3,6 +3,7 @@ package com.github.projectx.activity;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
     TextInputEditText password;
     @BindView(R.id.btn_signup)
     Button btnSignup;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private AuthController controller;
 
@@ -42,6 +45,16 @@ public class SignupActivity extends AppCompatActivity implements AuthController.
         controller.setSignupResultListener(this);
 
         btnSignup.setEnabled(!controller.isSignupPerforming());
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     @Override

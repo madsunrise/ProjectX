@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.projectx.R;
@@ -30,6 +32,10 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     private static final String TAG = FeedFragment.class.getSimpleName();
     @BindView(R.id.service_list_recycler)
     RecyclerView recyclerView;
+    @BindView(R.id.loading)
+    ProgressBar progress;
+    @BindView(R.id.missing_services)
+    TextView missingServices;
     private ServiceController serviceController;
     private ServiceListAdapter adapter;
 
@@ -52,10 +58,16 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
 
     public void loadAll() {
         serviceController.requestServiceList(null, null, 1, 20);
+        progress.setVisibility(View.VISIBLE);
+        progress.setEnabled(true);
+        missingServices.setVisibility(View.GONE);
     }
 
     public void loadMyServices() {
         serviceController.requestMyServices(1, 20);
+        progress.setVisibility(View.VISIBLE);
+        progress.setEnabled(true);
+        missingServices.setVisibility(View.GONE);
     }
 
     @Override
@@ -63,11 +75,17 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         Log.d(TAG, "Service list has been loaded");
         adapter = new ServiceListAdapter(services, this);
         recyclerView.swapAdapter(adapter, false);
+        progress.setVisibility(View.GONE);
+        if (services.isEmpty()) {
+            missingServices.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void dataLoadingFailed() {
         Log.d(TAG, "Loading service list from network failed!");
+        progress.setVisibility(View.GONE);
+        missingServices.setVisibility(View.VISIBLE);
         Toast.makeText(getContext(), R.string.error_occured, Toast.LENGTH_SHORT).show();
     }
 

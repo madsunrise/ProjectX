@@ -93,10 +93,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                     toolbar.setTitle(R.string.my_services);
                 }
                 break;
-            case SETTINGS:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
             case LOGOUT:
                 AuthController.resetAuth(getApplicationContext());
                 setupNavDrawer();

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -44,6 +45,8 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
     TextView price;
     @BindView(R.id.container)
     LinearLayout container;
+    @BindView(R.id.connect_with_author)
+    Button button;
 
     private Service service;
 
@@ -61,6 +64,7 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         controller = ServiceController.getInstance(getContext().getApplicationContext());
         controller.setServiceInfoListener(this);
         controller.requestServiceInfo(id);
+        button.setVisibility(View.GONE);
         return view;
     }
 
@@ -88,6 +92,7 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
             Glide.with(this).load(BASE_URL + url).into(image);
             container.addView(image);
         }
+        button.setVisibility(View.VISIBLE);
     }
 
     @Override

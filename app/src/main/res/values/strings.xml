@@ -32,4 +32,5 @@
     <string name="connect_with_author">Связаться</string>
     <string name="all_services">Все артисты</string>
     <string name="my_services">Мои услуги</string>
+    <string name="missing_services">Услуг нет</string>
 </resources>

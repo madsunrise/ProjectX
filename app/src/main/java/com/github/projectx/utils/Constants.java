@@ -6,7 +6,7 @@ package com.github.projectx.utils;
 
 public class Constants {
     public enum Menu {
-        SEARCH_SERVICE, ADD_SERVICE, MY_SERVICES, SETTINGS, LOGOUT
+        SEARCH_SERVICE, ADD_SERVICE, MY_SERVICES, LOGOUT
     }
 
     public enum RequestCode {

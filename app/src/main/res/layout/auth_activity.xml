@@ -35,11 +35,13 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/password_text" />
+            android:hint="@string/password_text"
+            android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/btn_login"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -48,6 +50,7 @@
 
     <Button
         android:id="@+id/btn_register"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

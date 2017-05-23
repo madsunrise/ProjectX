@@ -3,8 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_margin" />
+
+    <TextView
+        android:id="@+id/missing_services"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:gravity="center_horizontal|center"
+        android:text="@string/missing_services" />
+
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/service_list_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </android.support.design.widget.CoordinatorLayout>

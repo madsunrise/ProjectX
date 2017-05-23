@@ -106,7 +106,7 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish();
         return true;
     }
 
