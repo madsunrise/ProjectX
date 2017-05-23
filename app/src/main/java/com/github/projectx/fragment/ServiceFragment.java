@@ -1,5 +1,7 @@
 package com.github.projectx.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +24,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.github.projectx.network.NetHelper.BASE_URL;
 
@@ -42,6 +45,8 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
     @BindView(R.id.container)
     LinearLayout container;
 
+    private Service service;
+
     private ServiceController controller;
 
     @Override
@@ -61,6 +66,7 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
 
     @Override
     public void onDataLoaded(Service service) {
+        this.service = service;
         controller.setServiceInfoListener(null);
         progress.setVisibility(View.GONE);
         name.setVisibility(View.VISIBLE);
@@ -89,5 +95,16 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         controller.setServiceInfoListener(null);
         progress.setVisibility(View.GONE);
         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.connect_with_author)
+    public void composeEmail() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
+        intent.putExtra(Intent.EXTRA_EMAIL, service.getUserEmail());
+        intent.putExtra(Intent.EXTRA_SUBJECT, service.getName());
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 }

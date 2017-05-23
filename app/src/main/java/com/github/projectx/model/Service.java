@@ -24,6 +24,7 @@ public class Service {
     private int price;
     private Date dateCreated = new Date();
     private long userId;
+    private String userEmail;
     private List<String> photos = new ArrayList<>();
 
     public Service() {
@@ -113,5 +114,13 @@ public class Service {
 
     public void addPhoto(String base64photo) {
         this.photos.add(base64photo);
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }
