@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                     toolbar.setTitle(R.string.my_services);
                     break;
             }
-
         }
     }
 

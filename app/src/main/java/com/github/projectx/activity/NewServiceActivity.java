@@ -11,6 +11,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +64,8 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     LinearLayout photoContainer;
     @BindView(R.id.progress)
     ProgressBar progressBar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private ServiceController serviceController;
     private ArrayList<String> uris = new ArrayList<>();
 
@@ -89,12 +92,22 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
             }
         });
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putStringArrayList("uris", uris);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
