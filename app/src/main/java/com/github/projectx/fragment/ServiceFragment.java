@@ -76,6 +76,9 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         List<String> photoUrls = service.getPhotos();
         for (String url: photoUrls) {
             ImageView image = new ImageView(getContext());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 10, 0, 0);
+            image.setLayoutParams(lp);
             Glide.with(this).load(BASE_URL + url).into(image);
             container.addView(image);
         }

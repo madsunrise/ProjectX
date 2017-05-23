@@ -22,7 +22,15 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/price"
+            android:textColor="@color/md_teal_500"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
 
         <TextView
             android:id="@+id/description"
@@ -30,11 +38,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp" />
 
-        <TextView
-            android:id="@+id/price"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
             android:layout_gravity="end"
-            android:layout_marginTop="30dp" />
+            android:text="@string/connect_with_author"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
     </LinearLayout>
 </ScrollView>
