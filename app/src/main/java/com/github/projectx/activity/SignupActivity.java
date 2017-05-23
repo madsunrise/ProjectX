@@ -17,7 +17,7 @@ import butterknife.OnClick;
  * Created by igor on 16.04.17.
  */
 
-public class SignupActivity extends AppCompatActivity implements AuthController.SignupResult {
+public class SignupActivity extends AppCompatActivity implements AuthController.SignupListener {
 
     @BindView(R.id.name)
     TextInputEditText name;

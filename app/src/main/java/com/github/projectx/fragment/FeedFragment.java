@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
  * Created by ivan on 16.04.17.
  */
 
-public class FeedFragment extends Fragment implements ServiceController.ServiceListCallback, View.OnClickListener {
+public class FeedFragment extends Fragment implements ServiceController.ServiceListListener, View.OnClickListener {
 
     private static final String TAG = FeedFragment.class.getSimpleName();
     @BindView(R.id.service_list_recycler)
@@ -45,17 +45,17 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
         View view = inflater.inflate(R.layout.feed_fragment, container, false);
         ButterKnife.bind(this, view);
         setUpRecyclerView();
-        serviceController.setServiceListCallback(this);
+        serviceController.setServiceListListener(this);
         loadAll();
         return view;
     }
 
     public void loadAll() {
-        serviceController.queryForServiceList(null, null, 1, 20);
+        serviceController.requestServiceList(null, null, 1, 20);
     }
 
     public void loadMyServices() {
-        serviceController.queryForMyServices(1, 20);
+        serviceController.requestMyServices(1, 20);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class FeedFragment extends Fragment implements ServiceController.ServiceL
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        serviceController.setServiceListCallback(null);
+        serviceController.setServiceListListener(null);
     }
 
     @Override

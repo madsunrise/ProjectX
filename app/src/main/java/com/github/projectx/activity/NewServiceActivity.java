@@ -42,7 +42,7 @@ import butterknife.OnClick;
  * Created by igor on 17.04.17.
  */
 
-public class NewServiceActivity extends AppCompatActivity implements ServiceController.ServiceEditCallback {
+public class NewServiceActivity extends AppCompatActivity implements ServiceController.ServiceEditListener {
     public static final int PICK_IMAGE_GALLERY_REQUEST = 0;
     private static final String TAG = NewServiceActivity.class.getSimpleName();
     private static final int REQUEST_CODE = 101;
@@ -72,7 +72,7 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         setContentView(R.layout.new_service_activity);
         ButterKnife.bind(this);
         serviceController = ServiceController.getInstance(getApplicationContext());
-        serviceController.setServiceEditCallback(this);
+        serviceController.setServiceEditListener(this);
 
         addPhotoIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,7 +136,7 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
         service.setPhotos(encodedPhotos);
 
         NewServiceRequest request = new NewServiceRequest(service);
-        serviceController.sendNewService(request);
+        serviceController.createService(request);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class NewServiceActivity extends AppCompatActivity implements ServiceCont
     @Override
     public void onDestroy() {
         super.onDestroy();
-        serviceController.setServiceEditCallback(null);
+        serviceController.setServiceEditListener(null);
     }
 
     private void addURI(Uri uri, boolean restore) throws IOException {

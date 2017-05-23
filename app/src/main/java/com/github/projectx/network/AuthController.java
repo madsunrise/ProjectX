@@ -1,11 +1,14 @@
 package com.github.projectx.network;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.github.projectx.R;
 import com.github.projectx.model.LoginRequest;
 import com.github.projectx.model.SignupRequest;
 import com.github.projectx.network.api.AuthAPI;
+import com.github.projectx.utils.Constants;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,19 +18,18 @@ import retrofit2.Response;
  * Created by igor on 16.04.17.
  */
 
-public class AuthController extends BaseController {
+public class AuthController {
 
     private static AuthController instance = null;
     private final AuthAPI api;
-    private LoginResult loginResult;
-    private SignupResult signupResult;
+    private LoginListener loginResult;
+    private SignupListener signupResult;
 
     private boolean loginPerforming = false;
     private boolean signupPerforming = false;
 
     private AuthController(Context context) {
-        super(context);
-        api = retrofit.create(AuthAPI.class);
+        api = NetHelper.getRetrofit(context).create(AuthAPI.class);
     }
 
     public static synchronized AuthController getInstance(Context context) {
@@ -37,11 +39,30 @@ public class AuthController extends BaseController {
         return instance;
     }
 
-    public void setLoginResultListener(LoginResult listener) {
+    public static boolean isAuthorized(Context context) {
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        for (Constants.Keys key : Constants.Keys.values()) {
+            if (!sp.contains(key.value())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void resetAuth(Context context) {
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = sp.edit();
+        for (Constants.Keys key : Constants.Keys.values()) {
+            e.remove(key.value());
+        }
+        e.apply();
+    }
+
+    public void setLoginResultListener(LoginListener listener) {
         loginResult = listener;
     }
 
-    public void setSignupResultListener(SignupResult listener) {
+    public void setSignupResultListener(SignupListener listener) {
         signupResult = listener;
     }
 
@@ -127,11 +148,11 @@ public class AuthController extends BaseController {
         return signupPerforming;
     }
 
-    public interface LoginResult {
+    public interface LoginListener {
         void onResult(boolean success, int message);
     }
 
-    public interface SignupResult {
+    public interface SignupListener {
         void onResult(boolean success, int message);
     }
 }

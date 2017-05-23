@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.github.projectx.R;
 import com.github.projectx.model.Service;
 import com.github.projectx.network.ServiceController;
@@ -23,14 +22,11 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.github.projectx.network.BaseController.BASE_URL;
-
 /**
  * Created by igor on 17.04.17.
  */
 
-public class ServiceFragment extends Fragment implements ServiceController.ServiceInfoCallback {
-    private static final int PHOTO_HEIGHT = 50;
+public class ServiceFragment extends Fragment implements ServiceController.ServiceInfoListener {
 
     @BindView(R.id.progress)
     ProgressBar progress;
@@ -55,14 +51,14 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         price.setVisibility(View.INVISIBLE);
 
         controller = ServiceController.getInstance(getContext().getApplicationContext());
-        controller.setServiceInfoCallback(this);
-        controller.queryForService(id);
+        controller.setServiceInfoListener(this);
+        controller.requestServiceInfo(id);
         return view;
     }
 
     @Override
     public void onDataLoaded(Service service) {
-        controller.setServiceInfoCallback(null);
+        controller.setServiceInfoListener(null);
         progress.setVisibility(View.GONE);
         name.setVisibility(View.VISIBLE);
         description.setVisibility(View.VISIBLE);
@@ -77,14 +73,15 @@ public class ServiceFragment extends Fragment implements ServiceController.Servi
         List<String> photoUrls = service.getPhotos();
         for (String url: photoUrls) {
             ImageView image = new ImageView(getContext());
-            Glide.with(this).load(BASE_URL + url).into(image);
+            image.setImageResource(R.drawable.default_pic);
+            //Glide.with(this).load(BASE_URL + url).into(image);
             container.addView(image);
         }
     }
 
     @Override
     public void dataLoadingFailed() {
-        controller.setServiceInfoCallback(null);
+        controller.setServiceInfoListener(null);
         progress.setVisibility(View.GONE);
         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
     }

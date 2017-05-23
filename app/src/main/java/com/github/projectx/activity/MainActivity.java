@@ -13,7 +13,7 @@ import com.github.projectx.R;
 import com.github.projectx.fragment.FeedFragment;
 import com.github.projectx.fragment.ServiceFragment;
 import com.github.projectx.model.Service;
-import com.github.projectx.network.BaseController;
+import com.github.projectx.network.AuthController;
 import com.github.projectx.utils.Constants;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -41,13 +41,14 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
-        changeFragment(feedFragment, false);
+        if (savedInstanceState == null) {
+            changeFragment(feedFragment, false);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        feedFragment.loadAll();
         setupNavDrawer();
     }
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
     }
 
     public void addService() {
-        if (!BaseController.isAuthorized(getApplicationContext())) {
+        if (!AuthController.isAuthorized(getApplicationContext())) {
             startActivityForResult(new Intent(this, AuthActivity.class), Constants.RequestCode.NEW_SERVICE.ordinal());
         } else {
             startActivity(new Intent(this, NewServiceActivity.class));
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 addService();
                 break;
             case MY_SERVICES:
-                if (!BaseController.isAuthorized(getApplicationContext())) {
+                if (!AuthController.isAuthorized(getApplicationContext())) {
                     startActivityForResult(new Intent(this, AuthActivity.class), Constants.RequestCode.MY_SERVICES.ordinal());
                 } else {
                     changeFragment(feedFragment, true);
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
                 startActivity(intent);
                 break;
             case LOGOUT:
-                BaseController.resetAuth(getApplicationContext());
+                AuthController.resetAuth(getApplicationContext());
                 setupNavDrawer();
                 break;
         }
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements FeedFragment.CHF 
         for (String row : rows) {
             if (row.equals("-")) {
                 list.add(new DividerDrawerItem());
-            } else if (index == Constants.Menu.LOGOUT.ordinal() && !BaseController.isAuthorized(getApplicationContext())) {
+            } else if (index == Constants.Menu.LOGOUT.ordinal() && !AuthController.isAuthorized(getApplicationContext())) {
                 index++;
             } else {
                 list.add(new PrimaryDrawerItem()
